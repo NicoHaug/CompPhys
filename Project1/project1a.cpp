@@ -57,7 +57,7 @@ double *mkVecX(int n)
 {
         double *x = mkVec(n);
         for (int i=0; i<n; i++) {
-                x[i] = i * 1.0 /( (double) n + 1);
+                x[i] = i * 1.0 /( (double) n - 1);
         }
         return (double *)x;
 }
@@ -66,7 +66,7 @@ double *algorithmA(int n)
 {
         double h;
         double temp;
-        h = 1.0 /( (double) n + 1);
+        h = 1.0 /( (double) n - 1);
 
         double *a = mkVec(n);
         double *b = mkVec(n);
@@ -83,13 +83,13 @@ double *algorithmA(int n)
 
         // Boundary & Initial Conditions:
         v[0] = 0.0;
-        v[n] = 0.0;
+        v[n-1] = 0.0;
 
         //start clock
         clock_t start, finish;
         start = clock();
         // Forward substitution:
-        for (int i=2; i < n; i++) {
+        for (int i=2; i < n-1; i++) {
                 temp = a[i-1]/b[i-1];
                 b[i] -= temp*c[i-1];
                 f[i] -= temp*f[i-1];
@@ -100,7 +100,7 @@ double *algorithmA(int n)
         }
         //stop clock
         finish = clock();
-        double timeused = (double) (finish - start)/(CLOCKS_PER_SEC );
+        double timeused = (double) (finish - start)/(CLOCKS_PER_SEC);
         cout << setprecision(10) << setw(20) <<"Algo A elapsed time: " <<
                 timeused << endl;
 
@@ -113,7 +113,7 @@ double *algorithmB(int n)
 {
         double h;
         double temp;
-        h = 1.0 /( (double) n + 1);
+        h = 1.0 /( (double) n - 1);
 
         double *b = mkVec(n);
         double *f = mkVec(n);
@@ -132,7 +132,7 @@ double *algorithmB(int n)
         clock_t start, finish;
         start = clock();
         // Forward substitution:
-        for (int i=2; i < n; i++) {
+        for (int i=2; i < n-1; i++) {
                 b[i] -= 1.0/b[i-1];
                 f[i] += f[i-1]/b[i-1];
         }
@@ -157,20 +157,22 @@ int relativeError()
         double *eps = mkVec(k);
         double *h = mkVec(k);
 
-        for (int j=1; j < k; j++ ) {
+        for (int j=1; j < k+1; j++ ) {
                 int n = pow(10, j);
-                vector<int> epsilon(n);
+                cout << n << endl;
+                vector<double> epsilon(n);
                 double *v = algorithmB(n);
                 double *x = mkVecX(n);
-                double max;
-                h[j-1] = 1/((double) n+1);
 
-                for (int i=0; i<n; i++) {
+                double max_eps = log10(abs((v[1]-exactSol(x[1]))/exactSol(x[1])));
+                for (int i=2; i<n-1; i++) {
                         epsilon[i] = log10(abs((v[i]-exactSol(x[i]))/exactSol(x[i])));
+                        if (epsilon[i] > max_eps)
+                                max_eps = epsilon[i];
                 }
 
 
-                double max_eps = *max_element(epsilon.begin(), epsilon.end());
+                h[j-1] = 1/((double) n-1);
                 eps[j-1] = max_eps;
 
                 delete [] v; delete [] x;
@@ -179,6 +181,7 @@ int relativeError()
         myfile.open("RelErr.txt");
         for(int j = 0; j < k; j++) {
                 myfile << h[j] << " " << eps[j] << endl;
+                //cout << eps[j] << endl;
         }
         myfile.close();
         return 0;
