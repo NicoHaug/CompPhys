@@ -12,7 +12,7 @@
 #include <cmath>
 #include <fstream>
 #include <iomanip>
-#include <ctime>
+#include <chrono>
 using namespace std;
 using namespace arma;
 
@@ -54,29 +54,28 @@ int main(int argc, char *argv[])
         }
 
         // Solve and clock performance
-        clock_t start_1, finish_1, start_2, finish_2, start_3, finish_3;
-
-        start_1 = clock();
+        auto start_1 = chrono::high_resolution_clock::now();  // Start clock 1
         v1 = generalAlgorithm(n, A, f);
-        finish_1 = clock();
+        auto finish_1 = chrono::high_resolution_clock::now(); // Stop clock 1
 
-        start_2 = clock();
+        auto start_2 = chrono::high_resolution_clock::now();  // Start clock 2
         v2 = optimizedAlgorithm(n, A, f);
-        finish_2 = clock();
+        auto finish_2 = chrono::high_resolution_clock::now(); // Stop clock 2
 
-        start_3 = clock();
+        auto start_3 = chrono::high_resolution_clock::now();  // Start clock 3
         v3 = LUdecompAlgorithm(n, A, f);
-        finish_3 = clock();
+        auto finish_3 = chrono::high_resolution_clock::now(); // Stop clock 3
 
-        double timeused_1 = (double) (finish_1 - start_1)/(CLOCKS_PER_SEC );
-        double timeused_2 = (double) (finish_2 - start_2)/(CLOCKS_PER_SEC );
-        double timeused_3 = (double) (finish_3 - start_3)/(CLOCKS_PER_SEC );
-        cout << setprecision(10) << setw(20) <<"General Algorithm "
-                "elapsed time: " << timeused_1 << endl;
-        cout << setprecision(10) << setw(20) <<"Optimized Algorithm "
-                "elapsed time: " << timeused_2 << endl;
-        cout << setprecision(10) << setw(20) <<"LU-decomposition Algorithm "
-                "elapsed time: " << timeused_3 << endl;
+        chrono::duration<double> elapsed_1 = finish_1 - start_1;
+        chrono::duration<double> elapsed_2 = finish_2 - start_2;
+        chrono::duration<double> elapsed_3 = finish_3 - start_3;
+
+        cout << "General Algorithm with n=" << n <<
+                " gridpoints elapsed time:" << elapsed_1.count() << endl;
+        cout << "Optimized Algorithm with n=" << n <<
+                " gridpoints elapsed time:" << elapsed_2.count() << endl;
+        cout << "LU-decomposition Algorithm with n=" << n <<
+                " gridpoints elapsed time:" << elapsed_3.count() << endl;
 
         // Relative error
         relativeError();
