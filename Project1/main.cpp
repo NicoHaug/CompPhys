@@ -32,7 +32,7 @@ inline double exactSol(double x){
 // Begin main program
 int main(int argc, char *argv[])
 {
-        int n;
+        int n;                 // Number of grid-points
         n = atoi(argv[1]);     // Read n as cmd-line argument
 
         mat A(n,n,fill::zeros);
@@ -198,7 +198,7 @@ void relativeError()
                 }
 
 
-                h_err[j-1] = 1/((double) n-1);
+                h_err[j-1] = h;
                 eps[j-1] = max_eps;
 
         }
