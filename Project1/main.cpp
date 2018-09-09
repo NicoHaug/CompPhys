@@ -12,7 +12,7 @@
 #include <cmath>
 #include <fstream>
 #include <iomanip>
-#include "ctime"
+#include <ctime>
 using namespace std;
 using namespace arma;
 
@@ -20,6 +20,7 @@ using namespace arma;
 vec generalAlgorithm(int n, mat A, vec f);
 vec optimizedAlgorithm(int n, mat A, vec f);
 vec LUdecompAlgorithm(int n, mat A, vec f);
+void relativeError();
 
 inline double sourceFunc(double x){
         return 100.0*exp(-10.0*x);
@@ -28,6 +29,7 @@ inline double exactSol(double x){
         return 1.0-(1-exp(-10))*x-exp(-10*x);
 }
 
+// Begin main program
 int main(int argc, char *argv[])
 {
         int n;
@@ -51,10 +53,33 @@ int main(int argc, char *argv[])
                 f[i] = pow(h,2)*sourceFunc(x[i]);
         }
 
-        // Solve
+        // Solve and clock performance
+        clock_t start_1, finish_1, start_2, finish_2, start_3, finish_3;
+
+        start_1 = clock();
         v1 = generalAlgorithm(n, A, f);
+        finish_1 = clock();
+
+        start_2 = clock();
         v2 = optimizedAlgorithm(n, A, f);
+        finish_2 = clock();
+
+        start_3 = clock();
         v3 = LUdecompAlgorithm(n, A, f);
+        finish_3 = clock();
+
+        double timeused_1 = (double) (finish_1 - start_1)/(CLOCKS_PER_SEC );
+        double timeused_2 = (double) (finish_2 - start_2)/(CLOCKS_PER_SEC );
+        double timeused_3 = (double) (finish_3 - start_3)/(CLOCKS_PER_SEC );
+        cout << setprecision(10) << setw(20) <<"General Algorithm "
+                "elapsed time: " << timeused_1 << endl;
+        cout << setprecision(10) << setw(20) <<"Optimized Algorithm "
+                "elapsed time: " << timeused_2 << endl;
+        cout << setprecision(10) << setw(20) <<"LU-decomposition Algorithm "
+                "elapsed time: " << timeused_3 << endl;
+
+        // Relative error
+        relativeError();
 
         // Write data to file
         ofstream myfile;
@@ -68,7 +93,7 @@ int main(int argc, char *argv[])
 
         return 0;
 }
-
+// End main program
 
 vec generalAlgorithm(int n, mat A, vec f)
 {
@@ -110,33 +135,62 @@ vec optimizedAlgorithm(int n, mat A, vec f)
 
 vec LUdecompAlgorithm(int n, mat A, vec f)
 {
+        //X.submat( first_row, first_col, last_row, last_col )
+        //V.subvec( first_index, last_index )
+
+        // Remove endpoints
+        //n = n-1;
+        mat A2 = A.submat(1, 1, n-1, n-1);
+        vec f2 = f.subvec(1, n-1);
+
         vec v(n);
+        v[1] = v[n-1] = 0.0;
         mat L,U,P;             // Initialize matrices L, U, P for decomposition
-        lu(L,U,P,A);           // Perform LU-decomposition
-        mat Y = solve(P*L, f);
+        lu(L,U,P,A2);           // Perform LU-decomposition
+        mat Y = solve(P*L, f2);
         v  = solve(U, Y);
         // Boundary & Initial Conditions:
-        v[0] = v[n-1] = 0.0;
+        //v[1] = v[n-1] = 0.0;
 
         return v;
 }
 
-
-/*
-   int relativeError()
-   {
+void relativeError()
+{
         int k = 7;
-        double *eps = mkVec(k);
-        double *h = mkVec(k);
+        vec eps(k);
+        vec h_err(k);
 
         for (int j=1; j < k+1; j++ ) {
                 int n = pow(10, j);
-                cout << n << endl;
-                vector<double> epsilon(n);
-                double *v = algorithmB(n);
-                double *x = mkVecX(n);
 
-                double max_eps = log10(abs((v[1]-exactSol(x[1]))/exactSol(x[1])));
+                vec f(n);
+                vec x(n);
+                vec b(n);
+                vec v(n);
+                vec epsilon(n);
+                double max_eps;
+
+                double h = 1.0/((double) n-1);  // Step-size
+
+                // Fill vectors
+                for (int i=0; i<n; i++) {
+                        b[i] = 2.0;
+                        x[i] = i*h;
+                        f[i] = pow(h,2)*sourceFunc(x[i]);
+                }
+                // Solve using Optimized Algorithm:
+                // Forward substitution:
+                for (int i=2; i < n-1; i++) {
+                        b[i] -= 1.0/b[i-1];
+                        f[i] += f[i-1]/b[i-1];
+                }
+                // Backward substitution:
+                for (int i=n-2; i > 0; i--) {
+                        v[i] = (f[i] + v[i+1])/b[i];
+                }
+
+                max_eps = log10(abs((v[1]-exactSol(x[1]))/exactSol(x[1])));
                 for (int i=2; i<n-1; i++) {
                         epsilon[i] = log10(abs((v[i]-exactSol(x[i]))/exactSol(x[i])));
                         if (epsilon[i] > max_eps)
@@ -144,18 +198,16 @@ vec LUdecompAlgorithm(int n, mat A, vec f)
                 }
 
 
-                h[j-1] = 1/((double) n-1);
+                h_err[j-1] = 1/((double) n-1);
                 eps[j-1] = max_eps;
 
-                delete [] v; delete [] x;
         }
+        // Write data to file
         ofstream myfile;
-        myfile.open("RelErr.txt");
+        myfile.open("RelativeError.txt");
         for(int j = 0; j < k; j++) {
-                myfile << h[j] << " " << eps[j] << endl;
-                //cout << eps[j] << endl;
+                myfile << h_err[j] << " " << eps[j] << endl;
+
         }
         myfile.close();
-        return 0;
-   }
- */
+}
