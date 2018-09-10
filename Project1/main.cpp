@@ -1,6 +1,6 @@
 /**
  * Program for solving second-order differential equations on the form
- *                   u''(x) = f(x)
+ *                   -u''(x) = f(x)
  * by recasting the DE as a tridiagonal matrix equation on the form
  *                    Av(x) = f(x),
  * where A is a nxn tridiagonal matrix, and v(x) and f(x) are vectors
@@ -17,8 +17,8 @@ using namespace std;
 using namespace arma;
 
 //Functions used
-vec generalAlgorithm(int n, mat A, vec f);
-vec optimizedAlgorithm(int n, mat A, vec f);
+vec generalAlgorithm(int n, vec a, vec b, vec c, vec f);
+vec optimizedAlgorithm(int n, vec b, vec f);
 vec LUdecompAlgorithm(int n, mat A, vec f);
 void relativeError();
 
@@ -36,6 +36,9 @@ int main(int argc, char *argv[])
         n = atoi(argv[1]);     // Read n as cmd-line argument
 
         mat A(n,n,fill::zeros);
+        vec a(n, fill::zeros);
+        vec b(n, fill::zeros);
+        vec c(n, fill::zeros);
         vec f(n);
         vec v1(n);   // Store result from General Algorithm
         vec v2(n);   // Store result from Optimized Algorithm
@@ -43,10 +46,13 @@ int main(int argc, char *argv[])
         vec x(n);
 
         double h = 1.0/((double) n-1);  // Step-size
-        // Fill tridiagonal matrix
+        // Fill tridiagonal matrix and vectors
         A.diag(0).fill(2);
         A.diag(1).fill(-1);
         A.diag(-1).fill(-1);
+        b.fill(2);
+        c.fill(-1);
+        a.fill(-1);
         // Fill vectors
         for (int i=0; i<n; i++) {
                 x[i] = i*h;
@@ -55,11 +61,11 @@ int main(int argc, char *argv[])
 
         // Solve and clock performance
         auto start_1 = chrono::high_resolution_clock::now();  // Start clock 1
-        v1 = generalAlgorithm(n, A, f);
+        v1 = generalAlgorithm(n, a, b, c, f);
         auto finish_1 = chrono::high_resolution_clock::now(); // Stop clock 1
 
         auto start_2 = chrono::high_resolution_clock::now();  // Start clock 2
-        v2 = optimizedAlgorithm(n, A, f);
+        v2 = optimizedAlgorithm(n, b, f);
         auto finish_2 = chrono::high_resolution_clock::now(); // Stop clock 2
 
         auto start_3 = chrono::high_resolution_clock::now();  // Start clock 3
@@ -74,6 +80,7 @@ int main(int argc, char *argv[])
                 " gridpoints elapsed time:" << elapsed_1.count() << endl;
         cout << "Optimized Algorithm with n=" << n <<
                 " gridpoints elapsed time:" << elapsed_2.count() << endl;
+
         cout << "LU-decomposition Algorithm with n=" << n <<
                 " gridpoints elapsed time:" << elapsed_3.count() << endl;
 
@@ -94,26 +101,26 @@ int main(int argc, char *argv[])
 }
 // End main program
 
-vec generalAlgorithm(int n, mat A, vec f)
+vec generalAlgorithm(int n, vec a, vec b, vec c, vec f)
 {
         vec v(n);
         // Boundary & Initial Conditions:
         v[0] = v[n-1] = 0.0;
         // Forward substitution:
         for (int i=2; i < n-1; i++) {
-                A(i,i) -= (A(i-1, i)*A(i, i-1))/A(i-1, i-1);
-                f[i] -= (A(i-1, i)*f[i-1])/A(i-1, i-1);
+                b[i] -= (a[i-1]*c[i-1])/b[i-1];
+                f[i] -= (a[i-1]*f[i-1])/b[i-1];
 
         }
         // Backward substitution:
         for (int i=n-2; i > 0; i--) {
-                v[i] = (f[i] - A(i, i+1)*v[i+1])/A(i, i);
+                v[i] = (f[i] - c[i]*v[i+1])/b[i];
         }
 
         return v;
 }
 
-vec optimizedAlgorithm(int n, mat A, vec f)
+vec optimizedAlgorithm(int n, vec b, vec f)
 {
         vec v(n);
         // Boundary & Initial Conditions:
@@ -121,12 +128,12 @@ vec optimizedAlgorithm(int n, mat A, vec f)
 
         // Forward substitution:
         for (int i=2; i < n-1; i++) {
-                A(i,i) -= 1.0/A(i-1, i-1);
-                f[i] += f[i-1]/A(i-1, i-1);
+                b[i] -= 1.0/b[i-1];
+                f[i] += f[i-1]/b[i-1];
         }
         // Backward substitution:
         for (int i=n-2; i > 0; i--) {
-                v[i] = (f[i] + v[i+1])/A(i, i);
+                v[i] = (f[i] + v[i+1])/b[i];
         }
 
         return v;
@@ -134,22 +141,13 @@ vec optimizedAlgorithm(int n, mat A, vec f)
 
 vec LUdecompAlgorithm(int n, mat A, vec f)
 {
-        //X.submat( first_row, first_col, last_row, last_col )
-        //V.subvec( first_index, last_index )
 
-        // Remove endpoints
-        //n = n-1;
-        mat A2 = A.submat(1, 1, n-1, n-1);
-        vec f2 = f.subvec(1, n-1);
+        mat B = A.submat(1, 1, n-1, n-1);  // Redefine endpoints
+        vec b = f.subvec(1, n-1);          // Redefine endpoints
 
         vec v(n);
-        v[1] = v[n-1] = 0.0;
-        mat L,U,P;             // Initialize matrices L, U, P for decomposition
-        lu(L,U,P,A2);           // Perform LU-decomposition
-        mat Y = solve(P*L, f2);
-        v  = solve(U, Y);
-        // Boundary & Initial Conditions:
-        //v[1] = v[n-1] = 0.0;
+        // solve using Armadillo's built-in LU-decomposition solver
+        v = solve(B, b);
 
         return v;
 }
@@ -193,12 +191,12 @@ void relativeError()
                 for (int i=2; i<n-1; i++) {
                         epsilon[i] = log10(abs((v[i]-exactSol(x[i]))/exactSol(x[i])));
                         if (epsilon[i] > max_eps)
-                                max_eps = epsilon[i];
+                                max_eps = epsilon[i];  // Update max-value
                 }
 
 
-                h_err[j-1] = h;
-                eps[j-1] = max_eps;
+                h_err[j-1] = h;        // Store step-size value
+                eps[j-1] = max_eps;    // Store max relative error value
 
         }
         // Write data to file
