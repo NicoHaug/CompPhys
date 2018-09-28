@@ -36,7 +36,6 @@ void jacobiRotate(mat &A, mat &R, int k, int l, int N)
 // k,l - element to be set to zero
 // N - dimension of matrix
 //----------------------------------------------------------------------------
-//void jacobiRotate(mat &A, int k, int l, int N)
 {
 		double a_kk = A(k, k);
 		double a_ll = A(l, l);
@@ -73,7 +72,6 @@ void jacobiRotate(mat &A, mat &R, int k, int l, int N)
 		return;
 }
 
-
 //============================================================================
 int jacobiMethod(mat A, vec &eigval, mat &eigvec, int N)
 //----------------------------------------------------------------------------
@@ -83,7 +81,6 @@ int jacobiMethod(mat A, vec &eigval, mat &eigvec, int N)
 // eigval - address to put eigenvalues
 // eigvec - address to put eigenvectors
 // N - dimension of matrix
-// showCount = true -> print total number of iterations
 //----------------------------------------------------------------------------
 {
 		int k, l;

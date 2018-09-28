@@ -35,9 +35,9 @@ if sys.argv[1] == "benchmark":
     fig1 = plt.figure(1)
     title = "Jacobi's Method vs Armadillo's eig_sym()"
 
-    plt.plot(n, t1, label='Jacobi')
+    plt.plot(n, t1, 'o-', label='Jacobi')
     plt.plot(n, fit1(n), ":", label=slope1)
-    plt.plot(n, t2, label='Armadillo')
+    plt.plot(n, t2, 'o-', label='Armadillo')
     plt.plot(n, fit2(n), ":", label=slope2)
 
     plt.gca().set_xlabel('$\\log_{10}(n)$')
@@ -48,10 +48,8 @@ if sys.argv[1] == "benchmark":
 
     fig2 = plt.figure(2)
     title = "Jacobi's Method\n Number of Iterations"
-    plt.plot(n, 2 * n + np.log10(3), label='Min. expected iterations')
-    plt.plot(n, iter, 'o-', label='Actual iterations')
+    plt.plot(n, iter, 'o-', label='Number of iterations')
     plt.plot(n, fit3(n), ":", lw=2, label='Slope: ' + str(slope3))
-    plt.plot(n, 2 * n + np.log10(5), label='Max. expected iterations')
 
     plt.gca().set_xlabel('$\\log_{10}(n)$')
     plt.gca().set_ylabel('$\\log_{10}(N)$')
