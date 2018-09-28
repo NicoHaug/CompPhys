@@ -4,6 +4,7 @@
 #include <cmath>
 #include <armadillo>
 #include <fstream>
+#include <chrono>
 #include "jacobi.h"
 
 using namespace  std;
@@ -41,9 +42,18 @@ int main(int argc, char *argv[])
 		mat eigvec;           // Declare eigvec for storing eigenvectors
 
 		mat A = makeMatrix(d, a, N);
-		jacobiMethod(A, eigval, eigvec, N);
+
+		auto start = chrono::high_resolution_clock::now();
+		int iter = jacobiMethod(A, eigval, eigvec, N);
+		auto finish = chrono::high_resolution_clock::now();
+		chrono::duration<double> elapsed = finish - start;
+
 		vec ana_eigval = analyticalEigval(d, a, N);
 
+		cout << "Number of mesh points: " << N << endl;
+		cout << "Number of iterations: " << iter << endl;
+		cout << "Elapsed time (s): " << elapsed.count() << endl;
+		cout << "Eigenvalues:" << endl;
 		cout << "Numerical" << " " << "Analytical" << endl;
 		cout << eigval(0) << " " << ana_eigval(0) << endl;
 		cout << eigval(1) << " " << ana_eigval(1) << endl;

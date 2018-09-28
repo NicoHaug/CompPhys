@@ -14,11 +14,11 @@ endif
 
 
 bucklingBeam: bucklingBeam.o jacobi.o
-	${CPPflags} -o bucklingBeam.o bucklingBeam.cpp jacobi.cpp ${LIB}
+	${CPPflags} -o bucklingBeam.x bucklingBeam.cpp jacobi.cpp ${LIB}
 
 benchmark: benchmark.o jacobi.o
-	${CPPflags} -o benchmark.o benchmark.cpp jacobi.cpp ${LIB}
-	./benchmark.o
+	${CPPflags} -o benchmark.x benchmark.cpp jacobi.cpp ${LIB}
+	./benchmark.x
 	python plot.py benchmark
 
 clean:

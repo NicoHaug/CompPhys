@@ -51,8 +51,8 @@ if sys.argv[1] == "benchmark":
     plt.plot(n, iter, 'o-', label='Number of iterations')
     plt.plot(n, fit3(n), ":", lw=2, label='Slope: ' + str(slope3))
 
-    plt.gca().set_xlabel('$\\log_{10}(n)$')
-    plt.gca().set_ylabel('$\\log_{10}(N)$')
+    plt.gca().set_xlabel('$\\log_{10}(N)$')
+    plt.gca().set_ylabel('$\\log_{10}(n)$')
     plt.gca().set_title(title)
     plt.legend(loc='best')
     fig2.savefig("./Results/benchmark_iter.png")
