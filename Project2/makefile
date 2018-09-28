@@ -1,12 +1,25 @@
-CPPflags = g++ -O3
 
+CPPflags = g++ -std=c++11 -O3
+
+UNAME := $(shell uname)
+
+ifeq ($(UNAME), Darwin)
+INCLUDES = -I /usr/local/Cellar/armadillo/9.100.5/include
+LIB = -DARMA_DONT_USE_WRAPPER -framework Accelerate
+endif
+
+ifeq ($(UNAME), Linux)
 LIB = -DARMA_DONT_USE_WRAPPER -lblas -llapack
+endif
 
-main: main.o eigvalSolver.o
-	${CPPflags} -o main.o main.cpp eigvalSolver.cpp ${LIB}
 
-#test: test.o func.o
-#	${CPPflags} -o test.o test.cpp func.cpp ${LIB}
+bucklingBeam: bucklingBeam.o jacobi.o
+	${CPPflags} -o bucklingBeam.o bucklingBeam.cpp jacobi.cpp ${LIB}
 
-#benchmark: benchmark.o func.o
-#	${CPPflags} -o benchmark.o benchmark.cpp func.cpp ${LIB}
+benchmark: benchmark.o jacobi.o
+	${CPPflags} -o benchmark.o benchmark.cpp jacobi.cpp ${LIB}
+	./benchmark.o
+	python plot.py benchmark
+
+clean:
+	rm -f *.o *.txt
