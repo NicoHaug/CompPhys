@@ -5,3 +5,5 @@ This repository contains programs made for project 2 produced in a collaboration
 ### Contents
 
 [jacobi.cpp](https://github.com/nicolossus/FYS3150/blob/master/Project2/jacobi.cpp) contains an eigenvalue solver which use the Jacobi rotation method, and have the accompanying header file [jacobi.h](https://github.com/nicolossus/FYS3150/blob/master/Project2/jacobi.h)
+
+[bucklingBeam.cpp](https://github.com/nicolossus/FYS3150/blob/master/Project2/bucklingBeam.cpp) contains the code for solving the buckling beam problem using the Jacobi rotation method. To compile type `make bucklingBeam`. To run type `./bucklingBeam.x`
