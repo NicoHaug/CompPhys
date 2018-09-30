@@ -5,6 +5,7 @@ This repository contains programs made for project 2 produced in a collaboration
 ### Contents
 
 [jacobi.cpp](https://github.com/nicolossus/FYS3150/blob/master/Project2/jacobi.cpp) contains an eigenvalue solver which use the Jacobi rotation method, and have the accompanying header file [jacobi.h](https://github.com/nicolossus/FYS3150/blob/master/Project2/jacobi.h).
+
 **Function prototype**
 ```cpp
 //============================================================================
@@ -12,13 +13,17 @@ int jacobiMethod(mat A, vec &eigval, mat &eigvec, int N);
 //----------------------------------------------------------------------------
 // Diagonalize A and generate a sorted set of eigenvalues and eigenvectors
 //
+// Input:
 // A - matrix to be diagonalized
 // eigval - address to put eigenvalues
 // eigvec - address to put eigenvectors
 // N - dimension of matrix
-// returns number of similarity transformations
+//
+// Return:
+// number of similarity transformations
 //----------------------------------------------------------------------------
 ```
+
 **Usage**
 ```cpp
 #include "jacobi.h"
