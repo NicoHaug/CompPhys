@@ -42,6 +42,7 @@ int main()
 ```
 
 **Solved Problems**
+
 In order to run these programs, a directory `./Results` must be made.
 
 [bucklingBeam.cpp](https://github.com/nicolossus/FYS3150/blob/master/Project2/bucklingBeam.cpp) contains the code for solving the buckling beam problem using the Jacobi rotation method. Compile with `make bucklingBeam` and run with `./bucklingBeam.x`
