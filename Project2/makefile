@@ -16,10 +16,13 @@ endif
 bucklingBeam: bucklingBeam.o jacobi.o
 	${CPPflags} -o bucklingBeam.x bucklingBeam.cpp jacobi.cpp ${LIB}
 
+quantumDot: quantumDot.o jacobi.o
+	${CPPflags} -o quantumDot.x quantumDot.cpp jacobi.cpp ${LIB}
+
 benchmark: benchmark.o jacobi.o
 	${CPPflags} -o benchmark.x benchmark.cpp jacobi.cpp ${LIB}
 	./benchmark.x
 	python plot.py benchmark
 
 clean:
-	rm -f *.o *.txt
+	rm -f *.o *.txt *.x

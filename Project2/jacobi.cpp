@@ -75,12 +75,13 @@ void jacobiRotate(mat &A, mat &R, int k, int l, int N)
 //============================================================================
 int jacobiMethod(mat A, vec &eigval, mat &eigvec, int N)
 //----------------------------------------------------------------------------
-// Diagonalize A and generate a sortet set of eigenvales and eigenvectors
+// Diagonalize A and generate a sorted set of eigenvalues and eigenvectors
 //
 // A - matrix to be diagonalized
 // eigval - address to put eigenvalues
 // eigvec - address to put eigenvectors
 // N - dimension of matrix
+// returns number of similarity transformations
 //----------------------------------------------------------------------------
 {
 		int k, l;

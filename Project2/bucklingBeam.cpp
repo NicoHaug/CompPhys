@@ -51,7 +51,7 @@ int main(int argc, char *argv[])
 		vec ana_eigval = analyticalEigval(d, a, N);
 
 		cout << "Number of mesh points: " << N << endl;
-		cout << "Number of iterations: " << iter << endl;
+		cout << "Number of similarity transformations: " << iter << endl;
 		cout << "Elapsed time (s): " << elapsed.count() << endl;
 		cout << "Eigenvalues:" << endl;
 		cout << "Numerical" << " " << "Analytical" << endl;
