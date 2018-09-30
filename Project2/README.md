@@ -1,6 +1,6 @@
 # Project 2
 
-This repository contains programs made for project 2 produced in a collaboration between the theorist [Lasse](https://github.com/lasselb87), the nit-picker [Nicolai](https://github.com/nicolossus), and code master [Kristian](https://github.com/KristianWold).
+This repository contains programs made for project 2 produced in a collaboration between [Lasse](https://github.com/lasselb87), [Nicolai](https://github.com/nicolossus), and [Kristian](https://github.com/KristianWold).
 
 ### Contents
 
