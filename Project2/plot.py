@@ -47,8 +47,8 @@ if sys.argv[1] == "benchmark":
     fig1.savefig("./Results/benchmark.png")
 
     fig2 = plt.figure(2)
-    title = "Jacobi's Method\n Number of Iterations"
-    plt.plot(n, iter, 'o-', label='Number of iterations')
+    title = "Jacobi's Method\n Number of Similarity Transformations"
+    plt.plot(n, iter, 'o-', label='Number of similarity transformations')
     plt.plot(n, fit3(n), ":", lw=2, label='Slope: ' + str(slope3))
 
     plt.gca().set_xlabel('$\\log_{10}(N)$')
