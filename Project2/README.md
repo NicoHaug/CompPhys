@@ -55,6 +55,6 @@ int main()
 
 [plot.py](https://github.com/nicolossus/FYS3150/blob/master/Project2/plot.py) contains code for visualizing the data, and is called by the makefile.
 
-[makefile](https://github.com/nicolossus/FYS3150/blob/master/Project2/makefile) see descriptions above. To clean directory for object files and executables, run `make clean`. Run `make cleanResults` to clean the [Results folder](https://github.com/nicolossus/FYS3150/tree/master/Project2/Results) for all text files and figures.
+[makefile](https://github.com/nicolossus/FYS3150/blob/master/Project2/makefile) run `make all` to compile programs and produce results. To clean directory for object files and executables, run `make clean`. Run `make cleanResults` to clean the [Results folder](https://github.com/nicolossus/FYS3150/tree/master/Project2/Results) for all text files and figures. See also descriptions above.
 
 All data produced in this project can be found in the [Results folder](https://github.com/nicolossus/FYS3150/tree/master/Project2/Results)
