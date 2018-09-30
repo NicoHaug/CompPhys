@@ -5,7 +5,6 @@
 #include <armadillo>
 #include <fstream>
 #include <iomanip>
-#include <chrono>
 #include "jacobi.h"
 
 using namespace  std;
@@ -16,7 +15,6 @@ using namespace  arma;
 mat makeMatrix(double d, double a, int N);
 vec harmOsc(vec x, double w);
 vec coulomb(vec x, double w);
-
 
 // Begin main program
 //=============================================================================
@@ -29,66 +27,67 @@ int main(int argc, char *argv[])
 // p0 - interval starting point
 // pN - interval end point
 // w - oscillator frequency
-// Which potential: 1 for harmOsc, 2 for coulomb
 //----------------------------------------------------------------------------
 {
-		//Checks if the user is supplying enough commandline arguments
-		if (argc < 6)
+		if (argc < 5)
 		{
 				cout << "Bad usage" << endl;
 				cout << "Please supply:" << endl;
-				cout << "Number of mesh points N"<< endl;
-				cout << "Interval starting point p0"<< endl;
-				cout << "Interval	end point pN"<< endl;
-				cout << "Oscillator frequency w"<< endl;
-				cout << "Which potential: 1 for harmOsc, 2 for coulomb"<< endl;
+				cout << "	number of mesh points N"<< endl;
+				cout << "	starting point p0"<< endl;
+				cout << "	end point pN"<< endl;
+				cout << "	oscillator frequencys w"<< endl;
 				return 1;
 		}
 		int N = atoi(argv[1]);
 		double p0 = atof(argv[2]);
 		double pN = atof(argv[3]);
 		double w = atof(argv[4]);
-		int typePotential = atoi(argv[5]);
 
 		double h = (pN - p0)/(N+1);
 		double d = 2/(h*h);
 		double a = -1/(h*h);
 		vec x = linspace(p0+h, pN-h, N);  // Interval
 
-		vec potential;
-		if (typePotential == 1)
-		{
-				potential = harmOsc(x,w);
-		}
-		else if (typePotential == 2)
-		{
-				potential = coulomb(x,w);
-		}
-		else
-		{
-				cout << "Bad usage" << endl;
-				cout << "Please use 1 for harmOsc, 2 for coulomb" << endl;
-				return 1;
-		}
+		// Declare eigval for storing eigenvalues
+		//(values not used, but declaration neccessary)
+		vec eigval;
+		// Declare eigvec1 for storing non-interacting eigenvectors
+		mat eigvec1;
+		// Declare eigvec2 for storing interacting eigenvectors
+		mat eigvec2;
 
-		vec eigval;           // Declare eigval for storing eigenvalues
-		mat eigvec;           // Declare eigvec for storing eigenvectors
-
+		// Non-interacting case
 		mat A = makeMatrix(d, a, N);
-		A.diag(0) += potential;
+		vec V1 = harmOsc(x, w);
+		A.diag(0) += V1;
+		jacobiMethod(A, eigval, eigvec1, N);
 
-		// Call the method to yield eigenvalues and eigenvectors
-		int iter = jacobiMethod(A, eigval, eigvec, N);
+		// Interacting case
+		mat B = makeMatrix(d, a, N);
+		vec V2 = coulomb(x, w);
+		B.diag(0) += V2;
+		jacobiMethod(B, eigval, eigvec2, N);
 
-		cout << "Number of mesh points: " << N << endl;
-		cout << "Number of similarity transformations: " << iter << endl;
-		cout << setprecision(7) << "Ground state eigval: " << eigval(0) << endl;
-		cout << setprecision(7) << "1st excited state eigval: " << eigval(1) << endl;
-		cout << setprecision(7) << "2nd excited state eigval: " << eigval(2) << endl;
-		cout << setprecision(7) << "3rd excited state eigval: " << eigval(3) << endl;
+
+		// Eigenvectors normalized by dividing them by sqrt(h)
+		ofstream myfile;
+		myfile.open("./Results/waveFunctions.txt");
+		for(int i=0; i<N; i++)
+		{
+				myfile << x(i) <<
+				        " " << eigvec1(i,0)/sqrt(h)<<
+				        " " << eigvec2(i,0)/sqrt(h)<< endl;
+		}
+		myfile.close();
+
+		string command = string("python3 plot.py waveFunctions ") + string(argv[4]);
+		system(command.c_str());
+
 		return 0;
 }
 // End main program
+
 
 //=============================================================================
 mat makeMatrix(double d, double a, int N)

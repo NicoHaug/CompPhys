@@ -12,7 +12,7 @@ using namespace chrono;
 int main()
 {
 		ofstream myfile;
-		myfile.open("benchmark.txt");
+		myfile.open("./Results/benchmark.txt");
 
 		vec eigval;
 		mat eigvec;

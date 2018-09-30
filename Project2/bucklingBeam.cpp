@@ -1,5 +1,5 @@
 //=================================
-// included dependencies
+// Included dependencies
 #include <iostream>
 #include <cmath>
 #include <armadillo>

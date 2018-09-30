@@ -21,7 +21,7 @@ def curvefit(x, y, deg=1):
 
 
 if sys.argv[1] == "benchmark":
-    file = "benchmark.txt"
+    file = "./Results/benchmark.txt"
 
     n = np.log10(np.loadtxt(file, usecols=0))
     t1 = np.log10(np.loadtxt(file, usecols=1))
@@ -56,3 +56,34 @@ if sys.argv[1] == "benchmark":
     plt.gca().set_title(title)
     plt.legend(loc='best')
     fig2.savefig("./Results/benchmark_iter.png")
+
+
+if sys.argv[1] == "waveFunctions":
+    file = "./Results/waveFunctions.txt"
+
+    w = sys.argv[2]
+    x = np.loadtxt(file, usecols=0)
+    y1 = np.loadtxt(file, usecols=1)
+    y2 = np.loadtxt(file, usecols=2)
+
+    fig = plt.figure(1)
+    title = "Harmonic Oscillator Well with Two Electrons"
+
+    plt.plot(x, y1**2, label='Non-interacting')
+    plt.plot(x, y2**2, label='Interacting')
+
+    plt.gca().set_xlabel('$\\rho$')
+    plt.gca().set_ylabel('Probability, |$\\Psi|^2$')
+    plt.gca().set_title(title)
+
+    plt.gcf().set_tight_layout(True)
+    x_pos = 0.8
+    y_pos = 0.75
+    plt.text(x_pos, y_pos, "$\\omega=$" + w,
+             horizontalalignment='center',
+             verticalalignment='center',
+             transform=plt.gca().transAxes)
+
+    plt.legend(loc='upper right')
+    fig.savefig("./Results/wavefunc_w={}.png".format(w))
+    plt.show()

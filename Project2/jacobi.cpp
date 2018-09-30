@@ -77,11 +77,14 @@ int jacobiMethod(mat A, vec &eigval, mat &eigvec, int N)
 //----------------------------------------------------------------------------
 // Diagonalize A and generate a sorted set of eigenvalues and eigenvectors
 //
+// Input:
 // A - matrix to be diagonalized
 // eigval - address to put eigenvalues
 // eigvec - address to put eigenvectors
 // N - dimension of matrix
-// returns number of similarity transformations
+//
+// Return:
+// number of similarity transformations
 //----------------------------------------------------------------------------
 {
 		int k, l;

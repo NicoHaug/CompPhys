@@ -1,10 +1,10 @@
 //=================================
-// include guard
+// Include guard
 #ifndef __JACOBI_H_INCLUDED__
 #define __JACOBI_H_INCLUDED__
 
 //=================================
-// included dependencies
+// Included dependencies
 #include <iostream>
 #include <cmath>
 #include <armadillo>
