@@ -21,7 +21,7 @@ int main()
 		double average_time_jacobi = 0;
 		double average_time_arma = 0;
 		// Run Jacobi's method and Armadillo's eig_sym N = 10, 20, ..., 120
-		for(int N = 10; N <= 120; N += 10)
+		for(int N = 10; N <= 200; N += 10)
 		{
 				// Run the methods m = 10 times for each N, then average the times
 				for(int i = 0; i < m; i++)

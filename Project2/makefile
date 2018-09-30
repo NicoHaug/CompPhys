@@ -1,4 +1,4 @@
-
+CXX=g++
 CPPflags = g++ -std=c++11 -O3
 
 UNAME := $(shell uname)
@@ -12,6 +12,9 @@ ifeq ($(UNAME), Linux)
 LIB = -DARMA_DONT_USE_WRAPPER -lblas -llapack
 endif
 
+TARGETS = bucklingBeam quantumDot waveFunctions benchmark test
+
+all: $(TARGETS)
 
 bucklingBeam: bucklingBeam.o jacobi.o
 	${CPPflags} -o bucklingBeam.x bucklingBeam.cpp jacobi.cpp ${LIB}

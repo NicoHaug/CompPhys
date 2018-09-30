@@ -9,6 +9,7 @@
 using namespace  std;
 using namespace  arma;
 
+
 int main()
 {
 		// Test maxoffdiag
@@ -28,13 +29,13 @@ int main()
 		int l = 0;
 
 		double max = maxoffdiag(A, k, l, n);
-		if (k != 2 or l != 3) {passed = false;}
+		if (k != 3 or l != 2) {passed = false;}
 
 		A(1, 2) = -100;
 		max = 0;
 
 		max = maxoffdiag(A, k, l, n);
-		if (k != 1 or l != 2) {passed = false;}
+		if (k != 2 or l != 1) {passed = false;}
 
 		if (passed) {cout << "Passed: Found larget element" << endl;}
 		else{cout << "Failed: Didn't find larget element" << endl;}

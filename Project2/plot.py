@@ -36,12 +36,12 @@ if sys.argv[1] == "benchmark":
     title = "Jacobi's Method vs Armadillo's eig_sym()"
 
     plt.plot(n, t1, 'o-', label='Jacobi')
-    plt.plot(n, fit1(n), ":", label=slope1)
+    plt.plot(n, fit1(n), ":", lw=2, label='Slope: ' + str(slope1))
     plt.plot(n, t2, 'o-', label='Armadillo')
-    plt.plot(n, fit2(n), ":", label=slope2)
+    plt.plot(n, fit2(n), ":", lw=2, label='Slope: ' + str(slope2))
 
-    plt.gca().set_xlabel('$\\log_{10}(n)$')
-    plt.gca().set_ylabel('$\\log_{10}(t)$')
+    plt.gca().set_xlabel('$\\log_{10}(N)$')
+    plt.gca().set_ylabel('$\\log_{10}(T)$')
     plt.gca().set_title(title)
     plt.legend(loc='best')
     fig1.savefig("./Results/benchmark.png")
