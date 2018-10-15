@@ -9,3 +9,8 @@ Repository for projects in FYS3150.
 ### Project 2
 
 [Project 2](https://github.com/nicolossus/FYS3150/tree/master/Project2): In this project an eigenvalue solver based on the Jacobi rotate method is developed. The solver is tested on the equations of a buckling beam and Schrödinger’s equation for two electrons in a three-dimensional harmonic oscillator well, recasted as eigenvalue problems by discretization.
+
+
+### Project 3
+
+[Project 3](https://github.com/nicolossus/FYS3150/tree/master/Project3): In this project we developed a model simulating the motion of the planets in the Solar System by using the Verlet method to integrate Newton's equations of motion. 
