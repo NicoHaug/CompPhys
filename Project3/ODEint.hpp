@@ -29,6 +29,7 @@ class Verlet
 {
 private:
 	double dt;
+	mat prev_acc;
 public:
 	// Constructor
 	Verlet();
@@ -37,27 +38,32 @@ public:
 	};
 
 // Velocity independent
-	void integrate(mat &position, mat &velocity, mat calcacc(mat & position), mat &acceleration, double T, int N)
+	void integrate(mat &position, mat &velocity,
+	               void calcacc(mat & acceleration, mat & position),
+	               mat &acceleration, double T, int N)
 	{
 		dt = T/N;
 		position += position + velocity + 0.5*acceleration*dt*dt;
 		prev_acc = acceleration;
-		acceleration = calcacc(position);
-		velocity += velocity + 0.5*dt*(acceleration + prev_acc)
+		calcacc(acceleration, position);
+		velocity += velocity + 0.5*dt*(acceleration + prev_acc);
 
 	}
 
 
 	// Velocity dependent
-	void integrateVelocityDep(mat &position, mat &velocity, mat calcacc(mat & position, mat & velocity), mat &acceleration, double T, int N)
+	void integrateVelocityDep(mat &position, mat &velocity,
+	                          void calcacc(mat & acceleration, mat & position,
+	                                       mat & velocity), mat &acceleration,
+	                          double T, int N)
 	{
 		dt = T/N;
 
 		position += position + velocity + 0.5*acceleration*dt*dt;
 		prev_acc = acceleration;
-		acceleration = acceleration(position, velocity);
+		calcacc(acceleration, position, velocity);
 		velocity += velocity + 0.5*dt*(acceleration + prev_acc);
-		acceleration = calcacc(position, velocity);
+		calcacc(acceleration, position, velocity);
 	}
 
 };

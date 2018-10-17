@@ -14,7 +14,7 @@ INCL :=
 LIB := -DARMA_DONT_USE_WRAPPER -lblas -llapack
 endif
 
-OBJS = planet.o solver.o
+OBJS = ODEint.o SolarSystem.o
 
 TARGETS = main.x twoBody.x test.x
 
@@ -26,12 +26,11 @@ main.x: main.o $(OBJS)
 main.o: main.cpp
 	${CXX} ${CPPflags} -c $^ ${INCL} ${LIB}
 
-planet.o: planet.h
-	${CXX} ${CPPflags} -c planet.cpp ${INCL} ${LIB}
-
-solver.o: solver.hpp
+SolarSystem.o: SolarSystem.hpp
 	${CXX} ${CPPflags} -c $^ ${INCL} ${LIB}
 
+ODEint.o: ODEint.hpp
+	${CXX} ${CPPflags} -c $^ ${INCL} ${LIB}
 
 test.x: test.o $(OBJS)
 		${CXX} ${CPPflags} -o $@ $^ ${INCL} ${LIB}

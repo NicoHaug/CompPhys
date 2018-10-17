@@ -3,26 +3,27 @@
 
 #include <armadillo>
 #include <cmath>
-#include <ODEint>
+#include <vector>
+#include "ODEint.hpp"
 using namespace std;
 using namespace arma;
 
 class Planet
 {
 public:
-	vec pos;
-	vec vel;
-	double M;
+	vec position;
+	vec velocity;
+	double mass;
 	Planet(){
-		pos = zeros(3);
-		vel = zeros(3);
-		M = 0;
+		position = zeros(3);
+		velocity = zeros(3);
+		mass = 0;
 	}
 
-	Planet(vec position, vec velocity, double mass){
-		pos = position;
-		vel = velocity;
-		M = mass;
+	Planet(vec position_, vec velocity_, double mass_){
+		position = position_;
+		velocity = velocity_;
+		mass = mass_;
 	}
 };
 
@@ -35,34 +36,36 @@ class SolarSystem
 //------------------------------------------------
 {
 private:
-	// Variables
-	double GM = 4*M_PI*M_PI;   // [AU^3/yr^2]
+	// Quantities
+	double G = 4*M_PI*M_PI;   // [AU^3/yr^2]
 	double T;
 	int N;
 	int num_planets;          // Number of planets
 	int sample_interval;
 	vector<Planet> planets;
-	char[] method;
+
+	mat position;
+	mat velocity;
 	mat acceleration;
 	vec Force;
 
-
+	// Methods
 	vec newtonianGravity(vec position)
 	{
-		double rCube = pow(norm(pos), 3);
-		return -G/rCube*pos;
+		double rCube = pow(norm(position), 3);
+		return -G/rCube*position;
 	}
 
 	vec einsteinGravity(vec position, vec velocity)
 	{
-		double rCube = pow(norm(pos), 3);
-		return -G/rCube*pos;
+		double rCube = pow(norm(position), 3);
+		return -G/rCube*position;
 	}
 
 // Velocity independent force
 	void totalAcceleration(mat &acceleration, mat &position)
 	{
-		acceleration = zeros(3, numPlanets);
+		acceleration = zeros(3, num_planets);
 		for(int j=0; j<num_planets; j++)
 		{
 			acceleration.col(j) += newtonianGravity(position.col(j));
@@ -70,39 +73,38 @@ private:
 			{
 				vec rel_position = position.col(j) - position.col(k);
 				mat temp = newtonianGravity(rel_position);
-				acceleration.col(j) += planets[k].M*temp;
-				acceleration.col(k) -= planets[j].M*temp;
+				acceleration.col(j) += planets[k].mass*temp;
+				acceleration.col(k) -= planets[j].mass*temp;
 			}
 		}
 	}
 
-// Velocity dependent force
-	void totalAcceleration(mat &acceleration, mat &position, mat &velocity)
-	{
-		acceleration = zeros(3, numPlanets);
-		for(int j=0; j<num_planets; j++)
-		{
-			acceleration.col(j) += einsteinGravity(position.col(j), velocity.col(j));
-			for(int k=j+1; k<num_planets; k++)
-			{
-				vec rel_position = position.col(j) - position.col(k);
-				vec rel_velocity = velocity.col(j) - velocity.col(k);
-				mat temp = einsteinGravity(rel_position, rel_velocity);
-				acceleration.col(j) += planets[k].M*temp;
-				acceleration.col(k) -= planets[j].M*temp;
-			}
-		}
-	}
-
+/*
+   // Velocity dependent force
+        void totalAcceleration(mat &acceleration, mat &position, mat &velocity)
+        {
+                acceleration = zeros(3, num_planets);
+                for(int j=0; j<num_planets; j++)
+                {
+                        acceleration.col(j) += einsteinGravity(position.col(j), velocity.col(j));
+                        for(int k=j+1; k<num_planets; k++)
+                        {
+                                vec rel_position = position.col(j) - position.col(k);
+                                vec rel_velocity = velocity.col(j) - velocity.col(k);
+                                mat temp = einsteinGravity(rel_position, rel_velocity);
+                                acceleration.col(j) += planets[k].mass*temp;
+                                acceleration.col(k) -= planets[j].mass*temp;
+                        }
+                }
+        }
+ */
 
 
 public:
 	// Constructor
-	SolarSystem(double T_, int N_, vector<Planet> planets_, method_){
-		T = T_;
-		N = N_;
+	SolarSystem(vector<Planet> planets_){
 		planets = planets_;
-		method = method_;
+		num_planets = planets.size();
 	}
 
 // Destructor
@@ -111,24 +113,43 @@ public:
 
 // Methods
 
-private:
+	void solveNewton(double T_, int N_, int sample_interval_){
+		T = T_;
+		N = N_;
+		sample_interval = sample_interval_;
+		position=zeros(3,num_planets);
+		velocity=zeros(3,num_planets);
+		acceleration=zeros(3,num_planets);
 
 
-public:
 
-	Solve(){
+		// Initial conditions
+		for(int i=0; i<num_planets; i++)
+		{
+			position.col(i) = planets[i].position;
+			velocity.col(i) = planets[i].velocity;
+		}
+		totalAcceleration(acceleration, position);
 
-
-
-		method::integrate
+		// Solve motion
+		Verlet verlet;
+		for (int i=0; i<N-1; i++) {
+			verlet.integrate(position, velocity, totalAcceleration(acceleration, position),
+			                 acceleration, T, N)
+		}
 	}
 
-
-	// Destructor
-
-
-	// Methods
-
+/*
+        SolveEinstein(double T_, int N_, int sample_interval_, char[] method_){
+                T = T_;
+                N = N_;
+                sample_interval = sample_interval_;
+                method = method_;
+                for (int i=0; i<N-1; i++) {
+                        method::integrate
+                }
+        }
+ */
 
 
 };
