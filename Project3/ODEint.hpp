@@ -10,6 +10,12 @@ class Euler
 private:
 	double dt;
 public:
+	// Constructor
+	Euler();
+	// Destructor
+	~Euler(){
+	};
+
 	void integrate(mat &position, mat &velocity, mat &acceleration, double T, int N)
 	{
 		dt = T/N;
@@ -24,6 +30,11 @@ class Verlet
 private:
 	double dt;
 public:
+	// Constructor
+	Verlet();
+	// Destructor
+	~Verlet(){
+	};
 
 // Velocity independent
 	void integrate(mat &position, mat &velocity, mat calcacc(mat & position), mat &acceleration, double T, int N)

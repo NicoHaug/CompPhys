@@ -29,14 +29,9 @@ main.o: main.cpp
 planet.o: planet.h
 	${CXX} ${CPPflags} -c planet.cpp ${INCL} ${LIB}
 
-solver.o: solver.h
-	${CXX} ${CPPflags} -c solver.cpp ${INCL} ${LIB}
-
-twoBody.x: twoBody.o
-	${CXX} ${CPPflags} -o $@ $^ ${INCL} ${LIB}
-
-twoBody.o: twoBody.cpp
+solver.o: solver.hpp
 	${CXX} ${CPPflags} -c $^ ${INCL} ${LIB}
+
 
 test.x: test.o $(OBJS)
 		${CXX} ${CPPflags} -o $@ $^ ${INCL} ${LIB}
