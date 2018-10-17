@@ -1,18 +1,49 @@
-CPPflags = g++ -O3
+CC = gcc
+CXX = g++
+CPPflags = -g -Wall -std=c++11 -O3
 
-LIB = -DARMA_DONT_USE_WRAPPER -lblas -llapack
+UNAME := $(shell uname)
 
-twoBody: twoBody.o
-	${CPPflags} -o twoBody.x twoBody.cpp ${LIB}
+ifeq ($(UNAME), Darwin)
+INCL := -I /usr/local/Cellar/armadillo/9.100.5/include
+LIB := -DARMA_DONT_USE_WRAPPER -framework Accelerate
+endif
 
-main: main.o planet.o solver.o
-	${CPPflags} -o main.x main.cpp planet.cpp solver.cpp ${LIB}
+ifeq ($(UNAME), Linux)
+INCL :=
+LIB := -DARMA_DONT_USE_WRAPPER -lblas -llapack
+endif
 
-test: test.o planet.o solver.o
-	${CPPflags} -o test.x test.cpp planet.cpp solver.cpp ${LIB}
-	./test.x
+OBJS = planet.o solver.o
 
+TARGETS = main.x twoBody.x test.x
 
+all: $(TARGETS)
+
+main.x: main.o $(OBJS)
+	${CXX} ${CPPflags} -o $@ $^ ${INCL} ${LIB}
+
+main.o: main.cpp
+	${CXX} ${CPPflags} -c $^ ${INCL} ${LIB}
+
+planet.o: planet.h
+	${CXX} ${CPPflags} -c planet.cpp ${INCL} ${LIB}
+
+solver.o: solver.h
+	${CXX} ${CPPflags} -c solver.cpp ${INCL} ${LIB}
+
+twoBody.x: twoBody.o
+	${CXX} ${CPPflags} -o $@ $^ ${INCL} ${LIB}
+
+twoBody.o: twoBody.cpp
+	${CXX} ${CPPflags} -c $^ ${INCL} ${LIB}
+
+test.x: test.o $(OBJS)
+		${CXX} ${CPPflags} -o $@ $^ ${INCL} ${LIB}
+		./test.x
+
+test.o: test.cpp
+	${CXX} ${CPPflags} -c $^ ${INCL} ${LIB}
 
 clean:
 	rm -f *.o *.txt *.x
