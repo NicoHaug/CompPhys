@@ -62,23 +62,72 @@ if sys.argv[1] == "all":
     pos_pluto = np.loadtxt(file, usecols=(27, 28, 29))
 
     # 2D plot
+
     plt.figure()
-    plt.plot(pos_sun[:, 0], pos_sun[:, 1], label='Sun')
-    plt.plot(pos_earth[:, 0], pos_earth[:, 1], label='Earth')
-    # plt.plot([:, 0], v[:, 1], v[:, 2])
-    plt.legend(loc='best')
+    plt.gca().set_aspect("equal")
+    # plt.style.use('dark_background')
+    plt.grid(False)
+    plt.plot(pos_sun[:, 0], pos_sun[:, 1],
+             'yo', label='Sun', markersize=5)
+    plt.plot(pos_mercury[:, 0], pos_mercury[:, 1],
+             color='darkslategrey', label='Mercury')
+    plt.plot(pos_venus[:, 0], pos_venus[:, 1],
+             color='tan', label='Venus')
+    plt.plot(pos_earth[:, 0], pos_earth[:, 1],
+             color='deepskyblue', label='Earth')
+    plt.plot(pos_mars[:, 0], pos_mars[:, 1],
+             color='tomato', label='Mars')
+    plt.plot(pos_jupiter[:, 0], pos_jupiter[:, 1],
+             color='orange', label='Jupiter')
+    '''
+    plt.plot(pos_saturn[:, 0], pos_saturn[:, 1],
+             color='olive', label='Saturn')
+    plt.plot(pos_uranus[:, 0], pos_uranus[:, 1],
+             color='darkviolet', label='Uranus')
+    plt.plot(pos_neptune[:, 0], pos_neptune[:, 1],
+             color='darkblue', label='Neptune')
+    plt.plot(pos_pluto[:, 0], pos_pluto[:, 1],
+             color='black', label='Pluto')
+    '''
+    plt.subplots_adjust(right=0.68)
+    plt.legend(loc='center left', bbox_to_anchor=(1.04, 0.5),
+               fancybox=True, borderaxespad=0, ncol=1)
     plt.show()
 
     # 3D plot
     plt.figure()
     plt.gcf().add_subplot(111, projection='3d')
-    plt.gca().set_aspect("auto")
-    plt.plot(pos_sun[:, 0], pos_sun[:, 1], pos_sun[:, 2], label='Sun')
-    #plt.plot(pos_mercury[:, 0], pos_mercury[:, 1], pos_mercury[:, 2])
-    #plt.plot(pos_venus[:, 0], pos_venus[:, 1], pos_venus[:, 2])
-    plt.plot(pos_earth[:, 0], pos_earth[:, 1], pos_earth[:, 2], label='Earth')
-    # plt.plot([:, 0], v[:, 1], v[:, 2])
-    plt.legend(loc='best')
+    plt.gca().set_aspect("equal")
+    # plt.style.use('dark_background')
+    plt.grid(False)
+    plt.plot(pos_sun[:, 0], pos_sun[:, 1],
+             pos_sun[:, 2], 'yo', label='Sun', markersize=5)
+    plt.plot(pos_mercury[:, 0], pos_mercury[:, 1],
+             pos_mercury[:, 2], color='darkslategrey', label='Mercury')
+    plt.plot(pos_venus[:, 0], pos_venus[:, 1],
+             pos_venus[:, 2], color='tan', label='Venus')
+    plt.plot(pos_earth[:, 0], pos_earth[:, 1],
+             pos_earth[:, 2], color='deepskyblue', label='Earth')
+    plt.plot(pos_mars[:, 0], pos_mars[:, 1],
+             pos_mars[:, 2], color='tomato', label='Mars')
+    plt.plot(pos_jupiter[:, 0], pos_jupiter[:, 1],
+             pos_jupiter[:, 2], color='orange', label='Jupiter')
+    '''
+    plt.plot(pos_saturn[:, 0], pos_saturn[:, 1],
+             pos_saturn[:, 2], color='olive', label='Saturn')
+    plt.plot(pos_uranus[:, 0], pos_uranus[:, 1],
+             pos_uranus[:, 2], color='darkviolet', label='Uranus')
+    plt.plot(pos_neptune[:, 0], pos_neptune[:, 1],
+             pos_neptune[:, 2], color='darkblue', label='Neptune')
+    plt.plot(pos_pluto[:, 0], pos_pluto[:, 1],
+             pos_pluto[:, 2], color='black', label='Pluto')
+    '''
+    plt.gca().set_xlim(-30, 30)
+    plt.gca().set_ylim(-30, 30)
+    plt.gca().set_zlim(-5, 5)
+    plt.subplots_adjust(right=0.68)
+    plt.legend(loc='center left', bbox_to_anchor=(1.04, 0.5),
+               fancybox=True, borderaxespad=0, ncol=1)
     plt.show()
 
 

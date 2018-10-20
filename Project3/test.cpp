@@ -26,7 +26,7 @@ TEST_CASE("Circular orbit")
 
 	Planet Earth(vec({1,0,0}), vec({0,2*M_PI/365.25,0}),1./333000);
 	vector<Planet> solarsystem = vector<Planet>{Earth};
-	Solver solver(solarsystem, scale);
+	Solver solver(solarsystem, scale, true);
 
 	solver.solve(2, newton, 365.25, 1000000, 1000);
 
@@ -42,7 +42,7 @@ TEST_CASE("Elliptic orbit")
 
 	Planet Earth(vec({1,0,0}), vec({0,M_PI/365.25,0}),1./333000);
 	vector<Planet> solarsystem = vector<Planet>{Earth};
-	Solver solver(solarsystem, scale);
+	Solver solver(solarsystem, scale, true);
 
 	solver.solve(2,newton, 365.25, 1000000, 1000);
 
@@ -59,7 +59,7 @@ TEST_CASE("Three-body")
 	Planet Earth(vec({1,0,0}), vec({0,2*M_PI/365.25,0}),1./333000);
 	Planet Jupiter(vec({3,0,0}), vec({0,M_PI/365.25,0}),0.09);
 	vector<Planet> solarsystem = vector<Planet>{Earth,Jupiter};
-	Solver solver(solarsystem, scale);
+	Solver solver(solarsystem, scale, true);
 
 	solver.solve(2, newton, 365.25, 1000000, 1000);
 	REQUIRE(solver.totalEnergyFluctuation() < eps);

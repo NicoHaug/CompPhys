@@ -15,10 +15,18 @@ LIB := -DARMA_DONT_USE_WRAPPER -lblas -llapack
 endif
 
 OBJS = planet.o solver.o
-
-TARGETS = main.x allPlanets.x test.x
+TARGET1 = main.x
+TARGET2 = allPlanets.x
+TARGET3 = test.x
+TARGETS = $(TARGET1) $(TARGET2) $(TARGET3)
 
 all: $(TARGETS)
+
+main: $(TARGET1)
+
+allPlanets: $(TARGET2)
+
+test: $(TARGET3)
 
 main.x: main.o $(OBJS)
 	${CXX} ${CPPflags} -o $@ $^ ${INCL} ${LIB}
@@ -32,37 +40,19 @@ allPlanets.x: allPlanets.o $(OBJS)
 allPlanets.o: allPlanets.cpp
 	${CXX} ${CPPflags} -c $^ ${INCL} ${LIB}
 
-solver.o: solver.h
+solver.o:
 	${CXX} ${CPPflags} -c solver.cpp ${INCL} ${LIB}
 
-planet.o: planet.h
+planet.o:
 	${CXX} ${CPPflags} -c planet.cpp ${INCL} ${LIB}
 
 test.x: test.o $(OBJS)
 		${CXX} ${CPPflags} -o $@ $^ ${INCL} ${LIB}
 		./test.x
+		rm -f test.o test.x
 
 test.o: test.cpp
 	${CXX} ${CPPflags} -c $^ ${INCL} ${LIB}
 
 clean:
 	rm -f *.o *.txt *.x
-
-
-
-	CPPflags = g++ -O3
-
-	LIB = -DARMA_DONT_USE_WRAPPER -lblas -llapack
-
-	main.x: main.o planet.o solver.o
-		${CPPflags} -o main.x main.cpp planet.cpp solver.cpp ${LIB}
-
-	allPlanets.x: allPlanets.o planet.o solver.o
-		${CPPflags} -o allPlanets.x allPlanets.cpp planet.cpp solver.cpp ${LIB}
-
-	test: test.o planet.o solver.o
-		${CPPflags} -o test.x test.cpp planet.cpp solver.cpp ${LIB}
-		./test.x
-
-	clean:
-		rm -f *.o *.txt *.x
