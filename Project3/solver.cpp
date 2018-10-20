@@ -11,12 +11,15 @@
 using namespace std;
 using namespace arma;
 
-void Verlet::totalAcceleration(mat &totalAcc, vec acc(vec, vec), int i)
+
+void Solver::totalAcceleration(mat &totalAcc, vec acc(vec, vec))
 {
 	totalAcc = zeros(3, numPlanets);
 	for(int j=0; j<numPlanets; j++)
 	{
-		totalAcc.col(j) += acc(pos.col(j), vel.col(j));
+		if (staticSun == true) {
+			totalAcc.col(j) += acc(pos.col(j), vel.col(j));
+		}
 		for(int k=j+1; k<numPlanets; k++)
 		{
 			vec relpos = pos.col(j) - pos.col(k);
@@ -28,28 +31,84 @@ void Verlet::totalAcceleration(mat &totalAcc, vec acc(vec, vec), int i)
 	}
 }
 
-Verlet::Verlet(vector<Planet> p, int n, double s)
+void Solver::coordinatesToFile(ofstream &myfile)
 {
-	planets = p;
-	numPlanets = n;
-	scale = s;
+	for(int j=0; j<numPlanets; j++)
+	{
+		myfile << pos.col(j)(0) << " "
+		       << pos.col(j)(1) << " "
+		       << pos.col(j)(2) << " ";
+	}
+	myfile << "\n";
 }
 
-void Verlet::solve(vec acc(vec, vec), double T, int N, int sampleN)
+void Solver::sampleEnergyAndAngular(mat &kinetic, mat &potential,
+                                    vec &energyAllPlanets, vec &angular, int i)
+{
+	vec totalAngular(3,fill::zeros);
+	for(int j=0; j<numPlanets; j++)
+	{
+
+		kineticEnergy(i,j) = 0.5*planets[j].M*pow(norm(vel.col(j)),2);
+
+		//potential energy from sun
+		potentialEnergy(i,j) = -scale*planets[j].M/norm(pos.col(j));
+
+		//potential energy inbetween planets
+		for(int k=j+1; k<numPlanets; k++)
+		{
+			double temp = -scale*planets[j].M*planets[k].M/
+			              norm(pos.col(j) - pos.col(k));
+			potentialEnergy(i,j) += temp;
+			potentialEnergy(i,k) += temp;
+		}
+		energyAllPlanets(i) += kineticEnergy(i,j) + potentialEnergy(i,j);
+		totalAngular += planets[j].M*cross(pos.col(j), vel.col(j));
+	}
+	angularMomentum(i) = norm(totalAngular);
+
+}
+
+void Solver::euler(vec acc(vec, vec))
+{
+	prevVel = vel;
+	vel = vel + totalAcc*dt;
+	pos = pos + prevVel*dt;
+	totalAcceleration(totalAcc, acc);
+}
+
+void Solver::verlet(vec acc(vec, vec))
+{
+	pos = pos + vel*dt + 0.5*totalAcc*dt*dt;
+	prevAcc = totalAcc;
+	totalAcceleration(totalAcc, acc);
+	vel = vel + 0.5*(totalAcc + prevAcc)*dt;
+}
+
+Solver::Solver(vector<Planet> planets_, double scale_, bool staticSun_)
+{
+	planets = planets_;
+	numPlanets = planets.size();
+	scale = scale_;
+	staticSun = staticSun_;
+}
+
+void Solver::solve(int method, vec acc(vec, vec), double T, int N, int sampleN)
 {
 	solved = true;
-	double dt = T/N;
+	dt = T/N;
 	t = linspace(0, T, N);
 	pos = zeros(3, numPlanets);
 	vel = zeros(3, numPlanets);
-	countSample = 0;
 
-	kineticEnergy = zeros(sampleN, numPlanets);
-	potentialEnergy = zeros(sampleN, numPlanets);
-	angularMomentum = zeros(sampleN, numPlanets);
+	kineticEnergy      = zeros(N/sampleN, numPlanets);
+	potentialEnergy    = zeros(N/sampleN, numPlanets);
+	energyAllPlanets   = zeros(N/sampleN);
+	angularMomentum    = zeros(N/sampleN);
 
 	for(int i=0; i<numPlanets; i++)
 	{
+		//initial conditions
 		pos.col(i) = planets[i].pos;
 		vel.col(i) = planets[i].vel;
 	}
@@ -57,124 +116,63 @@ void Verlet::solve(vec acc(vec, vec), double T, int N, int sampleN)
 	ofstream myfile;
 	myfile.open("data.txt");
 
-	mat totalAcc(3, numPlanets, fill::zeros);
-	mat prevAcc(3, numPlanets, fill::zeros);
-	totalAcceleration(totalAcc, acc, 0);
+	totalAcc = zeros(3, numPlanets);
+	prevAcc = zeros(3, numPlanets);
+	prevVel = zeros(3, numPlanets);
+
+	totalAcceleration(totalAcc, acc);
+
+	coordinatesToFile(myfile);
+	sampleEnergyAndAngular(kineticEnergy, potentialEnergy,
+	                       energyAllPlanets, angularMomentum, 0);
+
 	for(int i=0; i<N-1; i++)
 	{
-		pos = pos + vel*dt + 0.5*totalAcc*dt*dt;
-		prevAcc = totalAcc;
-		totalAcceleration(totalAcc, acc, i+1);
-		vel = vel + 0.5*(totalAcc + prevAcc)*dt;
-
-		if (i%sampleN == 0)
+		if(method == 1) euler(acc);
+		if(method == 2) verlet(acc);
+		if ((i+1)%sampleN == 0)
 		{
-			for(int j=0; j<numPlanets; j++)
-			{
-				myfile << pos.col(j)(0) << " "
-				       << pos.col(j)(1) << " "
-				       << pos.col(j)(2) << " "
-
-				       << vel.col(j)(0) << " "
-				       << vel.col(j)(1) << " "
-				       << vel.col(j)(2) << " ";
-
-				kineticEnergy(countSample,j) = 0.5*planets[j].M*pow(norm(vel.col(j)),2);
-
-				//potential energy from sun
-				potentialEnergy(countSample,j) = -scale*planets[j].M/
-				                                 norm(pos.col(j));
-				//potential energy inbetween planets
-				for(int k=j+1; k<numPlanets; k++)
-				{
-					double temp = -scale*planets[j].M*planets[k].M/
-					              norm(pos.col(j) - pos.col(k));
-					potentialEnergy(countSample,j) += temp;
-					potentialEnergy(countSample,k) += temp;
-				}
-
-				angularMomentum(countSample,j) = planets[j].M*
-				                                 norm(cross(pos.col(j), vel.col(j)));
-			}
-			myfile << "\n";
-
-			countSample++;
-
+			coordinatesToFile(myfile);
+			sampleEnergyAndAngular(kineticEnergy, potentialEnergy,
+			                       energyAllPlanets, angularMomentum, (i+1)/sampleN);
 		}
+/*
+        pos = pos + vel*dt + 0.5*totalAcc*dt*dt;
+        prevAcc = totalAcc;
+        totalAcceleration(totalAcc, acc);
+        vel = vel + 0.5*(totalAcc + prevAcc)*dt;
+ */
 	}
 	myfile.close();
 }
-/*
-   void Verlet::solveEnergy()
-   {
-    if (solved == false)
-    {
-        throw invalid_argument("Must run .solve() first");
-    }
-    solvedEnergy = true;
-    kineticEnergy = zeros(N, numPlanets);
-    potentialEnergy = zeros(N, numPlanets);
-    angularMomentum = zeros(N, numPlanets);
-    for(int i=0; i<N; i++)
-    {
-        for(int j=0; j<numPlanets; j++)
-        {
-            kineticEnergy(i,j) = 0.5*planets[j].M*pow(norm(vel.slice(i).col(j)),2);
-            //potential energy from sun
-            potentialEnergy(i,j) = -scale*planets[j].M/
-            norm(pos.slice(i).col(j));
-            //potential energy inbetween planets
-            for(int k=j+1; k<numPlanets; k++)
-            {
-                double temp = -scale*planets[j].M*planets[k].M/
-                norm(pos.slice(i).col(j) - pos.slice(i).col(k));
-                potentialEnergy(i,j) += temp;
-                potentialEnergy(i,k) += temp;
-            }
-            angularMomentum(i,j) = planets[j].M*
-            norm(cross(pos.slice(i).col(j), vel.slice(i).col(j)));
-        }
-    }
-   }
-   void Verlet::coordinatesToFile(string filename)
-   {
-    if (solved == false)
-    {
-        throw invalid_argument("Must run .solve() before .solveEnergy()");
-    }
-    for(int j=0; j<N; j++)
-    {
-        for(int i=0; i<numPlanets; i++)
-        {
-            myfile << pos.slice(j).col(i)(0) << " "
-                   << pos.slice(j).col(i)(1) << " "
-                   << pos.slice(j).col(i)(2) << " "
-                   << vel.slice(j).col(i)(0) << " "
-                   << vel.slice(i).col(i)(1) << " "
-                   << vel.slice(i).col(i)(2) << " ";
-        }
-        myfile << endl;
-    }
-    myfile.close();
-   }
-   void Verlet::energyToFile(string filename)
-   {
-    if (solvedEnergy == false)
-    {
-        throw invalid_argument("Must run .solveEnergy() before .energyToFile()");
-    }
-    ofstream myfile;
-    myfile.open(filename);
-    for(int i=0; i<N; i++)
-    {
-        for(int j=0; j<numPlanets; j++)
-        {
-            myfile << kineticEnergy(i,j) << " "
-                   << potentialEnergy(i,j) << " "
-                   << angularMomentum(i,j) << " ";
-        }
-        myfile << endl;
-    }
-    myfile.close();
-   }
- */
+
+double Solver::kineticFluctuation(int i)
+{
+	vec kinetic = kineticEnergy.col(i);
+	double maxKinetic = kinetic(kinetic.index_max());
+	double minKinetic = kinetic(kinetic.index_min());
+	return abs((maxKinetic - minKinetic)/maxKinetic);
+}
+
+double Solver::potentialFluctuation(int i)
+{
+	vec potential = potentialEnergy.col(i);
+	double maxPotential = potential(potential.index_max());
+	double minPotential = potential(potential.index_min());
+	return abs((maxPotential - minPotential)/maxPotential);
+}
+
+double Solver::totalEnergyFluctuation()
+{
+
+	double maxEnergy = energyAllPlanets(energyAllPlanets.index_max());
+	double minEnergy = energyAllPlanets(energyAllPlanets.index_min());
+	return abs((maxEnergy - minEnergy)/maxEnergy);
+}
+
+double Solver::angularFluctuation()
+{
+	double maxAngular = angularMomentum(angularMomentum.index_max());
+	double minAngular = angularMomentum(angularMomentum.index_min());
+	return abs((maxAngular - minAngular)/maxAngular);
+}

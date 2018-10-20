@@ -32,61 +32,61 @@ int main(int argc, char *argv[])
 // Which potential: 1 for harmOsc, 2 for coulomb
 //----------------------------------------------------------------------------
 {
-		//Checks if the user is supplying enough commandline arguments
-		if (argc < 6)
-		{
-				cout << "Bad usage" << endl;
-				cout << "Please supply:" << endl;
-				cout << "Number of mesh points N"<< endl;
-				cout << "Interval starting point p0"<< endl;
-				cout << "Interval	end point pN"<< endl;
-				cout << "Oscillator frequency w"<< endl;
-				cout << "Which potential: 1 for harmOsc, 2 for coulomb"<< endl;
-				return 1;
-		}
-		int N = atoi(argv[1]);
-		double p0 = atof(argv[2]);
-		double pN = atof(argv[3]);
-		double w = atof(argv[4]);
-		int typePotential = atoi(argv[5]);
+	//Checks if the user is supplying enough commandline arguments
+	if (argc < 6)
+	{
+		cout << "Bad usage" << endl;
+		cout << "Please supply:" << endl;
+		cout << "Number of mesh points N"<< endl;
+		cout << "Interval starting point p0"<< endl;
+		cout << "Interval	end point pN"<< endl;
+		cout << "Oscillator frequency w"<< endl;
+		cout << "Which potential: 1 for harmOsc, 2 for coulomb"<< endl;
+		return 1;
+	}
+	int N = atoi(argv[1]);
+	double p0 = atof(argv[2]);
+	double pN = atof(argv[3]);
+	double w = atof(argv[4]);
+	int typePotential = atoi(argv[5]);
 
-		double h = (pN - p0)/(N+1);
-		double d = 2/(h*h);
-		double a = -1/(h*h);
-		vec x = linspace(p0+h, pN-h, N);  // Interval
+	double h = (pN - p0)/(N+1);
+	double d = 2/(h*h);
+	double a = -1/(h*h);
+	vec x = linspace(p0+h, pN-h, N);          // Interval
 
-		vec potential;
-		if (typePotential == 1)
-		{
-				potential = harmOsc(x,w);
-		}
-		else if (typePotential == 2)
-		{
-				potential = coulomb(x,w);
-		}
-		else
-		{
-				cout << "Bad usage" << endl;
-				cout << "Please use 1 for harmOsc, 2 for coulomb" << endl;
-				return 1;
-		}
+	vec potential;
+	if (typePotential == 1)
+	{
+		potential = harmOsc(x,w);
+	}
+	else if (typePotential == 2)
+	{
+		potential = coulomb(x,w);
+	}
+	else
+	{
+		cout << "Bad usage" << endl;
+		cout << "Please use 1 for harmOsc, 2 for coulomb" << endl;
+		return 1;
+	}
 
-		vec eigval;           // Declare eigval for storing eigenvalues
-		mat eigvec;           // Declare eigvec for storing eigenvectors
+	vec eigval;                   // Declare eigval for storing eigenvalues
+	mat eigvec;                   // Declare eigvec for storing eigenvectors
 
-		mat A = makeMatrix(d, a, N);
-		A.diag(0) += potential;
+	mat A = makeMatrix(d, a, N);
+	A.diag(0) += potential;
 
-		// Call the method to yield eigenvalues and eigenvectors
-		int iter = jacobiMethod(A, eigval, eigvec, N);
+	// Call the method to yield eigenvalues and eigenvectors
+	int iter = jacobiMethod(A, eigval, eigvec, N);
 
-		cout << "Number of mesh points: " << N << endl;
-		cout << "Number of similarity transformations: " << iter << endl;
-		cout << setprecision(7) << "Ground state eigval: " << eigval(0) << endl;
-		cout << setprecision(7) << "1st excited state eigval: " << eigval(1) << endl;
-		cout << setprecision(7) << "2nd excited state eigval: " << eigval(2) << endl;
-		cout << setprecision(7) << "3rd excited state eigval: " << eigval(3) << endl;
-		return 0;
+	cout << "Number of mesh points: " << N << endl;
+	cout << "Number of similarity transformations: " << iter << endl;
+	cout << setprecision(7) << "Ground state eigval: " << eigval(0) << endl;
+	cout << setprecision(7) << "1st excited state eigval: " << eigval(1) << endl;
+	cout << setprecision(7) << "2nd excited state eigval: " << eigval(2) << endl;
+	cout << setprecision(7) << "3rd excited state eigval: " << eigval(3) << endl;
+	return 0;
 }
 // End main program
 
@@ -100,11 +100,11 @@ mat makeMatrix(double d, double a, int N)
 // N - number of mesh points -> determines matrix dimensionality
 //----------------------------------------------------------------------------
 {
-		mat A(N,N, fill::zeros);
-		A.diag(-1).fill(a);
-		A.diag(0).fill(d);
-		A.diag(1).fill(a);
-		return A;
+	mat A(N,N, fill::zeros);
+	A.diag(-1).fill(a);
+	A.diag(0).fill(d);
+	A.diag(1).fill(a);
+	return A;
 }
 // End function
 
@@ -118,7 +118,7 @@ vec harmOsc(vec x, double w)
 // w - oscillator frequency
 //----------------------------------------------------------------------------
 {
-		return w*w*x%x;
+	return w*w*x%x;
 }
 // End function
 
@@ -130,6 +130,6 @@ vec coulomb(vec x, double w)
 // w - oscillator frequency
 //----------------------------------------------------------------------------
 {
-		return w*w*x%x + 1/x;
+	return w*w*x%x + 1/x;
 }
 // End function

@@ -26,27 +26,13 @@ TEST_CASE("Circular orbit")
 
 	Planet Earth(vec({1,0,0}), vec({0,2*M_PI/365.25,0}),1./333000);
 	vector<Planet> solarsystem = vector<Planet>{Earth};
-	Verlet solver(solarsystem, 1, scale);
+	Solver solver(solarsystem, scale);
 
-	solver.solve(newton, 365.25, 1000000, 1000);
+	solver.solve(2, newton, 365.25, 1000000, 1000);
 
-	vec kinetic = solver.kineticEnergy.col(0);
-	double maxKinetic = kinetic(kinetic.index_max());
-	double minKinetic = kinetic(kinetic.index_min());
-	double relKinetic = abs((maxKinetic - minKinetic)/maxKinetic);
-	REQUIRE(relKinetic < eps);
-
-	vec potential = solver.potentialEnergy.col(0);
-	double maxPotential = potential(potential.index_max());
-	double minPotential = potential(potential.index_min());
-	double relPotential = abs((maxPotential - minPotential)/maxPotential);
-	REQUIRE(relPotential < eps);
-
-	mat angular = solver.angularMomentum.col(0);
-	double maxAngular = angular(angular.index_max());
-	double minAngular = angular(angular.index_min());
-	double relAngular = abs((maxAngular - minAngular)/maxAngular);
-	REQUIRE(relAngular < eps);
+	REQUIRE(solver.kineticFluctuation(0) < eps);
+	REQUIRE(solver.potentialFluctuation(0) < eps);
+	REQUIRE(solver.angularFluctuation() < eps);
 }
 
 TEST_CASE("Elliptic orbit")
@@ -56,16 +42,12 @@ TEST_CASE("Elliptic orbit")
 
 	Planet Earth(vec({1,0,0}), vec({0,M_PI/365.25,0}),1./333000);
 	vector<Planet> solarsystem = vector<Planet>{Earth};
-	Verlet solver(solarsystem, 1, scale);
+	Solver solver(solarsystem, scale);
 
-	solver.solve(newton, 365.25, 1000000, 1000);
+	solver.solve(2,newton, 365.25, 1000000, 1000);
 
-	vec totalEnergy = solver.kineticEnergy.col(0) + solver.potentialEnergy.col(0);
-	double maxEnergy = totalEnergy(totalEnergy.index_max());
-	double minEnergy = totalEnergy(totalEnergy.index_min());
-	double relEnergy = abs((maxEnergy - minEnergy)/maxEnergy);
-	REQUIRE(relEnergy < eps);
-	cout << relEnergy << endl;
+	REQUIRE(solver.totalEnergyFluctuation() < eps);
+	REQUIRE(solver.angularFluctuation() < eps);
 }
 
 TEST_CASE("Three-body")
@@ -77,20 +59,9 @@ TEST_CASE("Three-body")
 	Planet Earth(vec({1,0,0}), vec({0,2*M_PI/365.25,0}),1./333000);
 	Planet Jupiter(vec({3,0,0}), vec({0,M_PI/365.25,0}),0.09);
 	vector<Planet> solarsystem = vector<Planet>{Earth,Jupiter};
-	Verlet solver(solarsystem, 2, scale);
+	Solver solver(solarsystem, scale);
 
-	solver.solve(newton, 365.25, 1000000, 1000);
-
-	vec totalEnergy = solver.kineticEnergy.col(0) + solver.potentialEnergy.col(0)
-	                  + solver.kineticEnergy.col(1) + solver.potentialEnergy.col(1);
-	double maxEnergy = totalEnergy(totalEnergy.index_max());
-	double minEnergy = totalEnergy(totalEnergy.index_min());
-	double relEnergy = abs((maxEnergy - minEnergy)/maxEnergy);
-	REQUIRE(relEnergy < eps);
-
-	vec angular = solver.angularMomentum.col(0) + solver.angularMomentum.col(1);
-	double maxAngular = angular(angular.index_max());
-	double minAngular = angular(angular.index_min());
-	double relAngular = abs((maxAngular - minAngular)/maxAngular);
-	REQUIRE(relEnergy < eps);
+	solver.solve(2, newton, 365.25, 1000000, 1000);
+	REQUIRE(solver.totalEnergyFluctuation() < eps);
+	REQUIRE(solver.angularFluctuation() < eps);
 }

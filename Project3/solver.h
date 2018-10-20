@@ -12,12 +12,13 @@
 using namespace std;
 using namespace arma;
 
-class Verlet
+class Solver
 {
 private:
 	//keeps track of if the methods solve() and solveEnergy() have been called
 	bool solved = false;
 	bool solvedEnergy = false;
+	bool staticSun = true;
 
 	vec t;
 	mat pos;
@@ -26,24 +27,34 @@ private:
 	int numPlanets;
 	int N;
 	double scale;
-	int countSample;
+	double dt;
 
-	void totalAcceleration(mat & totalAcc, vec acc(vec, vec), int i);
+	void totalAcceleration(mat & totalAcc, vec acc(vec, vec));
+	void coordinatesToFile(ofstream &myfile);
+	void euler(vec acc(vec,vec));
+	void verlet(vec acc(vec,vec));
+
+	mat totalAcc;
+	mat prevAcc;
+	mat prevVel;
 
 public:
 	mat kineticEnergy;
 	mat potentialEnergy;
-	mat angularMomentum;
+	vec energyAllPlanets;
+	vec angularMomentum;
 
-	Verlet(vector<Planet> p, int n, double scale);
+	Solver(vector<Planet> p, double scale, bool staticSun);
 
-	void solve(vec acc(vec, vec), double T, int N, int sampleN);
+	void solve(int method, vec acc(vec, vec), double T, int N, int sampleN);
 
-	void solveEnergy();
+	void sampleEnergyAndAngular(mat &kinetic, mat &potential, vec &angular,
+	                            vec &energyAllPlanets, int i);
 
-	void coordinatesToFile(string filename);
-
-	void energyToFile(string filename);
+	double kineticFluctuation(int i);
+	double potentialFluctuation(int i);
+	double totalEnergyFluctuation();
+	double angularFluctuation();
 };
 
 #endif
