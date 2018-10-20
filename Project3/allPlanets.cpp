@@ -1,3 +1,5 @@
+//=================================
+// Included dependencies
 #include <iostream>
 #include <iomanip>
 #include <armadillo>
@@ -11,13 +13,18 @@
 using namespace std;
 using namespace arma;
 
+//=================================
 // Global variables
 double G = 4*M_PI*M_PI;      // Gravitational constant
 
-// Functions
 
+//===================================
+//------------ FUNCTIONS ------------
+//===================================
+
+// Begin function
 //=============================================================================
-vec newton(vec pos, vec vel)
+inline vec newton(vec pos, vec vel)
 //----------------------------------------------------------------------------
 // Calculate newtonian gravity
 //----------------------------------------------------------------------------
@@ -25,8 +32,12 @@ vec newton(vec pos, vec vel)
 	double rCube = pow(norm(pos), 3);
 	return -G/rCube*pos;
 }
-// end function
+// End function
 
+
+//============================================================================
+//-------------------------------- MAIN --------------------------------------
+//============================================================================
 
 // Begin main program
 //=============================================================================
@@ -36,8 +47,8 @@ int main(int argc, char *argv[])
 //
 // Command line arguments:
 // T - simulation time [years]
-// N - number of time points
-// n - sample point
+// N - number of integration points
+// n - sample point interval
 //----------------------------------------------------------------------------
 {
 	// Check if the user is supplying enough commandline arguments
@@ -55,8 +66,8 @@ int main(int argc, char *argv[])
 	int N = atoi(argv[2]);
 	int sampleN = atoi(argv[3]);
 
-	// Initialize stellar objects in the Solar System
-	double M_sun = 1.0;               // [solar mass]
+	// Initialize celestial bodies in the Solar System
+	double M_sun = 1.0;              // [solar mass]
 	double M_mercury = 0.166E-6;     // [solar mass]
 	double M_venus = 2.081E-6;       // [solar mass]
 	double M_earth = 3.039E-6;       // [solar mass]
@@ -107,7 +118,7 @@ int main(int argc, char *argv[])
 	vector<Planet> solarsystem = vector<Planet>{Sun, Mercury, Venus, Earth, Mars,
 		                                    Jupiter, Saturn, Uranus, Neptune, Pluto};
 
-	// Fix momentum
+	// Set motion properties of the Sun
 	for (unsigned int i=1; i<solarsystem.size(); i++) {
 		solarsystem[0].pos -= 1/solarsystem[0].M*solarsystem[i].M*solarsystem[i].pos;
 		solarsystem[0].vel -= 1/solarsystem[0].M*solarsystem[i].M*solarsystem[i].vel;

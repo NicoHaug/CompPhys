@@ -1,6 +1,10 @@
+//=================================
+// Include guard
 #ifndef SOLVER_H
 #define SOLVER_H
 
+//=================================
+// Included dependencies
 #include <iostream>
 #include <armadillo>
 #include <fstream>
@@ -12,49 +16,76 @@
 using namespace std;
 using namespace arma;
 
+// Begin class
+//=============================================================================
 class Solver
+//----------------------------------------------------------------------------
+// Solve the motion of the solar system using Euler's and Verlet's method.
+// Energies and angular momentum is also calculated.
+//----------------------------------------------------------------------------
 {
 private:
-	//keeps track of if the methods solve() and solveEnergy() have been called
-	bool solved = false;
-	bool solvedEnergy = false;
-	bool staticSun = true;
+	// Declaration of private variables
+	//===========================================================================
+	mat pos;                   // Position matrix
+	mat vel;                   // Velocity matrix
+	vector<Planet> planets;    // Vector of planet properties
+	int numPlanets;            // Number of planets
+	double G;                  // Gravitational constant
+	double dt;                 // time step
+	mat totalAcc;              // Total acceleration matrix
+	mat prevAcc;               // Previous acceleration matrix
+	mat prevVel;               // Previous velocity matrix
 
-	vec t;
-	mat pos;
-	mat vel;
-	vector<Planet> planets;
-	int numPlanets;
-	int N;
-	double scale;
-	double dt;
-
+	// Private methods
+	//===========================================================================
+	// Calculate the total acceleration from the force between bodies
 	void totalAcceleration(mat & totalAcc, vec acc(vec, vec));
+	// Write coordinates to file
 	void coordinatesToFile(ofstream &myfile);
+	// Euler's method
 	void euler(vec acc(vec,vec));
+	// Verlet's method
 	void verlet(vec acc(vec,vec));
 
-	mat totalAcc;
-	mat prevAcc;
-	mat prevVel;
+	// Activators
+	//===========================================================================
+	// Method solve() called is true
+	bool solved = false;
+	// Method solvedEnergy() is true
+	bool solvedEnergy = false;
+	// Static sun is true
+	bool staticSun = true;
 
 public:
+	// Declare public variables
+	//===========================================================================
 	mat kineticEnergy;
 	mat potentialEnergy;
 	vec energyAllPlanets;
 	vec angularMomentum;
 
-	Solver(vector<Planet> p, double scale, bool staticSun);
+	// Constructor
+	//===========================================================================
+	Solver(vector<Planet> p, double G, bool staticSun);
 
+	// Public methods
+	//===========================================================================
+	// Solve the system using either Euler's or Verlet's method
 	void solve(int method, vec acc(vec, vec), double T, int N, int sampleN);
 
+	// Calculate energy and angular momentum
 	void sampleEnergyAndAngular(mat &kinetic, mat &potential, vec &angular,
 	                            vec &energyAllPlanets, int i);
-
+	// Find fluctuation of the kinetic energy of planet x
 	double kineticFluctuation(int i);
+	// Find fluctuation of the potential energy of planet x
 	double potentialFluctuation(int i);
+	// Find fluctuation of the total energy of planet x
 	double totalEnergyFluctuation();
+	// Find fluctuation of the angular momentum of planet x
 	double angularFluctuation();
 };
+// End class
 
-#endif
+#endif // __SOLVER_H_INCLUDED__

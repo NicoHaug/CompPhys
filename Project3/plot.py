@@ -1,7 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
-import matplotlib.animation as animation
 import sys
 
 # Set fontsizes in figures
@@ -128,42 +127,3 @@ if sys.argv[1] == "all":
     plt.legend(loc='center left', bbox_to_anchor=(1.04, 0.5),
                fancybox=True, borderaxespad=0, ncol=1)
     plt.show()
-
-
-def create_animation(self):
-    fig = plt.figure()
-    r = 0.05
-    plt.gca().set_xlim(-self.L1 - self.L2 - r, self.L1 + self.L2 + r)
-    plt.gca().set_ylim(-self.L1 - self.L2 - r, self.L1 + self.L2 + r)
-    plt.gca().set_aspect('equal')
-    plt.axis('off')
-
-    self.pendulums, = plt.plot([], [], 'k-', lw=2)
-    self.trace_pendulum1, = plt.plot([], [], 'b:', lw=1)
-    self.trace_pendulum2, = plt.plot([], [], 'r:', lw=1)
-    self.c0, = plt.plot([], [], 'ko', markersize=5)
-    self.c1, = plt.plot([], [], 'bo', markersize=8)
-    self.c2, = plt.plot([], [], 'ro', markersize=8)
-    self.time_text = plt.gca().text(0.05, 0.9, '',
-                                    transform=plt.gca().transAxes)
-
-    self.animation = animation.FuncAnimation(fig,
-                                             self._next_frame,
-                                             frames=range(self.t.size),
-                                             repeat=None,
-                                             interval=1000 * self._dt,
-                                             blit=True)
-
-
-def _next_frame(self, i):
-    self.pendulums.set_data((0, self.x1[i], self.x2[i]),
-                            (0, self.y1[i], self.y2[i]))
-    self.trace_pendulum1.set_data(self.x1[:i], self.y1[:i])
-    self.trace_pendulum2.set_data(self.x2[:i], self.y2[:i])
-    self.c0.set_data(0, 0)
-    self.c1.set_data(self.x1[i], self.y1[i])
-    self.c2.set_data(self.x2[i], self.y2[i])
-    self.time_text.set_text('time = {0:0.1f}s'.format(i * self._dt))
-
-    return self.pendulums, self.trace_pendulum1, self.trace_pendulum2,\
-        self.c0, self.c1, self.c2, self.time_text
