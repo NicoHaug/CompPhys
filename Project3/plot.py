@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
+import matplotlib.animation as animation
 import sys
 
 # Set fontsizes in figures
@@ -57,7 +58,7 @@ if sys.argv[1] == "all":
     pos_mars = np.loadtxt(file, usecols=(12, 13, 14))
     pos_jupiter = np.loadtxt(file, usecols=(15, 16, 17))
     pos_saturn = np.loadtxt(file, usecols=(18, 19, 20))
-    pos_uranus = np.loadtxt(file, usecols=(21, 21, 23))
+    pos_uranus = np.loadtxt(file, usecols=(21, 22, 23))
     pos_neptune = np.loadtxt(file, usecols=(24, 25, 26))
     pos_pluto = np.loadtxt(file, usecols=(27, 28, 29))
 
@@ -79,7 +80,6 @@ if sys.argv[1] == "all":
              color='tomato', label='Mars')
     plt.plot(pos_jupiter[:, 0], pos_jupiter[:, 1],
              color='orange', label='Jupiter')
-    '''
     plt.plot(pos_saturn[:, 0], pos_saturn[:, 1],
              color='olive', label='Saturn')
     plt.plot(pos_uranus[:, 0], pos_uranus[:, 1],
@@ -88,7 +88,7 @@ if sys.argv[1] == "all":
              color='darkblue', label='Neptune')
     plt.plot(pos_pluto[:, 0], pos_pluto[:, 1],
              color='black', label='Pluto')
-    '''
+
     plt.subplots_adjust(right=0.68)
     plt.legend(loc='center left', bbox_to_anchor=(1.04, 0.5),
                fancybox=True, borderaxespad=0, ncol=1)
@@ -112,7 +112,6 @@ if sys.argv[1] == "all":
              pos_mars[:, 2], color='tomato', label='Mars')
     plt.plot(pos_jupiter[:, 0], pos_jupiter[:, 1],
              pos_jupiter[:, 2], color='orange', label='Jupiter')
-    '''
     plt.plot(pos_saturn[:, 0], pos_saturn[:, 1],
              pos_saturn[:, 2], color='olive', label='Saturn')
     plt.plot(pos_uranus[:, 0], pos_uranus[:, 1],
@@ -121,7 +120,7 @@ if sys.argv[1] == "all":
              pos_neptune[:, 2], color='darkblue', label='Neptune')
     plt.plot(pos_pluto[:, 0], pos_pluto[:, 1],
              pos_pluto[:, 2], color='black', label='Pluto')
-    '''
+
     plt.gca().set_xlim(-30, 30)
     plt.gca().set_ylim(-30, 30)
     plt.gca().set_zlim(-5, 5)
@@ -131,15 +130,40 @@ if sys.argv[1] == "all":
     plt.show()
 
 
-"""
-x1 = np.loadtxt(file, usecols=0)
-y1 = np.loadtxt(file, usecols=1)
-x2 = np.loadtxt(file, usecols=6)
-y2 = np.loadtxt(file, usecols=7)
-#x3 = np.loadtxt(file, usecols=12)
-#y3 = np.loadtxt(file, usecols=13)
-plt.plot(x1, y1)
-plt.plot(x2, y2)
-#plt.plot(x3, y3)
-plt.show()
-"""
+def create_animation(self):
+    fig = plt.figure()
+    r = 0.05
+    plt.gca().set_xlim(-self.L1 - self.L2 - r, self.L1 + self.L2 + r)
+    plt.gca().set_ylim(-self.L1 - self.L2 - r, self.L1 + self.L2 + r)
+    plt.gca().set_aspect('equal')
+    plt.axis('off')
+
+    self.pendulums, = plt.plot([], [], 'k-', lw=2)
+    self.trace_pendulum1, = plt.plot([], [], 'b:', lw=1)
+    self.trace_pendulum2, = plt.plot([], [], 'r:', lw=1)
+    self.c0, = plt.plot([], [], 'ko', markersize=5)
+    self.c1, = plt.plot([], [], 'bo', markersize=8)
+    self.c2, = plt.plot([], [], 'ro', markersize=8)
+    self.time_text = plt.gca().text(0.05, 0.9, '',
+                                    transform=plt.gca().transAxes)
+
+    self.animation = animation.FuncAnimation(fig,
+                                             self._next_frame,
+                                             frames=range(self.t.size),
+                                             repeat=None,
+                                             interval=1000 * self._dt,
+                                             blit=True)
+
+
+def _next_frame(self, i):
+    self.pendulums.set_data((0, self.x1[i], self.x2[i]),
+                            (0, self.y1[i], self.y2[i]))
+    self.trace_pendulum1.set_data(self.x1[:i], self.y1[:i])
+    self.trace_pendulum2.set_data(self.x2[:i], self.y2[:i])
+    self.c0.set_data(0, 0)
+    self.c1.set_data(self.x1[i], self.y1[i])
+    self.c2.set_data(self.x2[i], self.y2[i])
+    self.time_text.set_text('time = {0:0.1f}s'.format(i * self._dt))
+
+    return self.pendulums, self.trace_pendulum1, self.trace_pendulum2,\
+        self.c0, self.c1, self.c2, self.time_text
