@@ -18,15 +18,15 @@ OBJS = planet.o solver.o
 TARGET1 = main.x
 TARGET2 = allPlanets.x
 TARGET3 = test.x
-TARGETS = $(TARGET1) $(TARGET2) $(TARGET3)
+TARGET4 = escapeVel.x
+TARGET5 = earthAndJupiter.x
+TARGET6 = relativistic.x
+
+TARGETS = $(TARGET1) $(TARGET2) $(TARGET3) $(TARGET4) $(TARGET5) $(TARGET6)
 
 all: $(TARGETS)
 
 main: $(TARGET1)
-
-allPlanets: $(TARGET2)
-
-test: $(TARGET3)
 
 main.x: main.o $(OBJS)
 	${CXX} ${CPPflags} -o $@ $^ ${INCL} ${LIB}
@@ -40,11 +40,29 @@ allPlanets.x: allPlanets.o $(OBJS)
 allPlanets.o: allPlanets.cpp
 	${CXX} ${CPPflags} -c $^ ${INCL} ${LIB}
 
+escapeVel.x: main.o $(OBJS)
+	${CXX} ${CPPflags} -o $@ $^ ${INCL} ${LIB}
+
+escapeVel.o: main.cpp
+	${CXX} ${CPPflags} -c $^ ${INCL} ${LIB}
+
+earthAndJupiter.x: earthAndJupiter.o $(OBJS)
+	${CXX} ${CPPflags} -o $@ $^ ${INCL} ${LIB}
+
+earthAndJupiter.o: earthAndJupiter.cpp
+	${CXX} ${CPPflags} -c $^ ${INCL} ${LIB}
+
+relativistic.x: relativistic.o $(OBJS)
+	${CXX} ${CPPflags} -o $@ $^ ${INCL} ${LIB}
+
+relativistic.o: relativistic.cpp
+	${CXX} ${CPPflags} -c $^ ${INCL} ${LIB}
+
 solver.o:
-	${CXX} ${CPPflags} -c solver.cpp ${INCL} ${LIB}
+	${CXX} ${CPPflags} -c ./Classes/solver.cpp ${INCL} ${LIB}
 
 planet.o:
-	${CXX} ${CPPflags} -c planet.cpp ${INCL} ${LIB}
+	${CXX} ${CPPflags} -c ./Classes/planet.cpp ${INCL} ${LIB}
 
 test.x: test.o $(OBJS)
 		${CXX} ${CPPflags} -o $@ $^ ${INCL} ${LIB}
@@ -56,3 +74,9 @@ test.o: test.cpp
 
 clean:
 	rm -f *.o *.txt *.x
+
+cleanRaw:
+	rm -f ./Raw_data/*.txt
+
+cleanResults:
+	rm -f ./Results/*.txt ./Results/*.png

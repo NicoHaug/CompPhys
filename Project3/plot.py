@@ -1,3 +1,6 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
 import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
@@ -12,43 +15,50 @@ params = {'legend.fontsize': 'large',
 plt.rcParams.update(params)
 
 if sys.argv[1] == "pos":
-    file = "data.txt"
+    file = "./Raw_Data/data.txt"
 
     x = np.loadtxt(file, usecols=0)
     y = np.loadtxt(file, usecols=1)
 
     fig = plt.figure()
-    # plt.gca().set_aspect("equal")
+    plt.gca().set_aspect("equal")
     plt.plot(x, y)
+    plt.gca().set_xlabel('$X$ [AU]')
+    plt.gca().set_ylabel('$Y$ [AU]')
     plt.show()
 
 if sys.argv[1] == "energy":
-    file = "energy.txt"
+    file = "./Raw_Data/energy.txt"
 
     x = np.loadtxt(file, usecols=0)
     y = np.loadtxt(file, usecols=1)
 
     fig = plt.figure()
-    # plt.gca().set_aspect("equal")
     plt.plot(np.linspace(0, 1, len(x)), x)
     plt.plot(np.linspace(0, 1, len(y)), y)
+    plt.ticklabel_format(style='sci', axis='y', scilimits=(0, 0))
+    plt.gca().set_xlabel('$x-axis$')
+    plt.gca().set_ylabel('$E$')
     plt.grid(True)
     plt.show()
 
 if sys.argv[1] == "fluctuation":
-    file = "fluctuation.txt"
+    file = "./Raw_Data/fluctuation.txt"
+    label_ = sys.argv[2]
 
     n = np.loadtxt(file, usecols=0)
     y = np.loadtxt(file, usecols=1)
 
     fig = plt.figure()
-    plt.plot(np.log10(n), np.log10(y))
+    plt.plot(np.log10(n), np.log10(y), label=label_)
+    plt.gca().set_xlabel('$\\log_{10}(N)$')
+    plt.gca().set_ylabel('$\\log_{10}(E_f)$')
     plt.grid(True)
     plt.show()
 
 
 if sys.argv[1] == "all":
-    file = "data.txt"
+    file = "./Raw_Data/data.txt"
 
     pos_sun = np.loadtxt(file, usecols=(0, 1, 2))
     pos_mercury = np.loadtxt(file, usecols=(3, 4, 5))

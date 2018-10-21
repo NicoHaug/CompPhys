@@ -8,13 +8,13 @@
 #include <string>
 #include <sstream>
 #include <iterator>
-#include "solver.h"
-#include "planet.h"
+#include "./Classes/solver.h"
+#include "./Classes/planet.h"
 using namespace std;
 using namespace arma;
 
 //=================================
-// Global variables
+// Global variable(s)
 double G = 4*M_PI*M_PI;      // Gravitational constant
 
 
@@ -22,8 +22,7 @@ double G = 4*M_PI*M_PI;      // Gravitational constant
 //------------ FUNCTIONS ------------
 //===================================
 
-// Begin function
-//=============================================================================
+//============================================================================
 inline vec newton(vec pos, vec vel)
 //----------------------------------------------------------------------------
 // Calculate newtonian gravity
@@ -32,15 +31,12 @@ inline vec newton(vec pos, vec vel)
 	double rCube = pow(norm(pos), 3);
 	return -G/rCube*pos;
 }
-// End function
+//============================================================================
 
 
 //============================================================================
 //-------------------------------- MAIN --------------------------------------
 //============================================================================
-
-// Begin main program
-//=============================================================================
 int main(int argc, char *argv[])
 //----------------------------------------------------------------------------
 // Simulate motion of the Solar System
@@ -124,7 +120,7 @@ int main(int argc, char *argv[])
 		solarsystem[0].vel -= 1/solarsystem[0].M*solarsystem[i].M*solarsystem[i].vel;
 	}
 
-	// Initialize solver
+	// Initialize solver(s)
 	Solver solverVerlet(solarsystem, G, false);
 
 	// Solve
@@ -134,4 +130,4 @@ int main(int argc, char *argv[])
 
 	return 0;
 }
-// End main program
+//============================================================================

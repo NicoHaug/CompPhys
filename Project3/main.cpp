@@ -1,3 +1,5 @@
+//=================================
+// Included dependencies
 #include <iostream>
 #include <iomanip>
 #include <armadillo>
@@ -6,50 +8,78 @@
 #include <string>
 #include <sstream>
 #include <iterator>
-#include "solver.h"
-#include "planet.h"
+#include "./Classes/solver.h"
+#include "./Classes/planet.h"
 using namespace std;
 using namespace arma;
 
-double scale = 4*M_PI*M_PI;
+//=================================
+// Global variable(s)
+double G = 4*M_PI*M_PI;        // Gravitational constant
 
-vec newton(vec pos, vec vel)
+
+//===================================
+//------------ FUNCTIONS ------------
+//===================================
+
+//============================================================================
+inline vec newton(vec pos, vec vel)
+//----------------------------------------------------------------------------
+// Calculate newtonian gravity
+//----------------------------------------------------------------------------
 {
 	double rCube = pow(norm(pos), 3);
-	return -scale/rCube*pos;
+	return -G/rCube*pos;
 }
+//============================================================================
 
+
+//============================================================================
+//-------------------------------- MAIN --------------------------------------
+//============================================================================
 int main(int argc, char const *argv[])
+//----------------------------------------------------------------------------
+// Simulate motion of the Solar System
+//
+// Command line arguments:
+// T - simulation time [years]
+// N - number of integration points
+// n - sample point interval
+//----------------------------------------------------------------------------
 {
-
-	//Checks if the user is supplying enough commandline arguments
+	// Check if the user is supplying enough commandline arguments
 	if (argc < 4)
 	{
 		cout << "Bad usage! \n";
 		cout << "Please supply:\n";
 		cout << "Simulation time T\n";
-		cout << "Number of mesh points N\n";
-		cout << "Sample interval"<< endl;
+		cout << "Number of time points N\n";
+		cout << "Sample point interval sampleN"<< endl;
 		return 1;
 	}
-	Planet Earth(vec({1,0,0}), vec({0,2*M_PI,0}),1./333000);
-	vector<Planet> solarsystem = vector<Planet>{Earth};
-	Solver solverEuler(solarsystem, scale);
-	Solver solverVerlet(solarsystem, scale);
 
 	double T = atof(argv[1]);
 	int N = atoi(argv[2]);
 	int sampleN = atoi(argv[3]);
 
+	// Initialize celestial bodies in the Solar System
+	Planet Earth(vec({1,0,0}), vec({0,2*M_PI,0}),1./333000);
+	vector<Planet> solarsystem = vector<Planet>{Earth};
+
+	// Initialize solver
+	Solver solverEuler(solarsystem, G, true);
+	Solver solverVerlet(solarsystem, G, true);
+
+	// Solve motion
 	solverEuler.solve(1, newton, T, N, sampleN);
 	system("python3 plot.py pos");
 
 	solverVerlet.solve(2, newton, T, N, sampleN);
-
 	system("python3 plot.py pos");
 
+	// Calculate energies
 	ofstream myfile;
-	myfile.open("energy.txt");
+	myfile.open("./Raw_Data/energy.txt");
 	for(int i=0; i<N/sampleN; i++)
 	{
 		myfile << setprecision(8)
@@ -59,53 +89,30 @@ int main(int argc, char const *argv[])
 	myfile.close();
 	system("python3 plot.py energy");
 
-	myfile.open("fluctuation.txt");
-
+	// Calculate energy fluctation with Euler's method
+	myfile.open("./Raw_Data/fluctuation.txt");
 	for(int n = 100; n<=1e8; n*=10)
 	{
-		Solver solver(solarsystem, scale);
+		Solver solver(solarsystem, G, true);
 		solver.solve(1, newton, T, n, n/10);
 		myfile << n << " " << solver.totalEnergyFluctuation() << "\n";
 		cout << n << endl;
 	}
 	myfile.close();
+	system("python3 plot.py fluctuation Euler");
 
-	system("python3 plot.py fluctuation");
-
-	myfile.open("fluctuation.txt");
-
+	// Calculate energy fluctation with Verlet's method
+	myfile.open("./Raw_Data/fluctuation.txt");
 	for(int n = 100; n<=1e8; n*=10)
 	{
-		Solver solver(solarsystem, scale);
+		Solver solver(solarsystem, G, true);
 		solver.solve(2, newton, T, n, n/10);
 		myfile << n << " " << solver.totalEnergyFluctuation() << "\n";
 		cout << n << endl;
 	}
 	myfile.close();
-
-	system("python3 plot.py fluctuation");
+	system("python3 plot.py fluctuation Verlet");
 
 	return 0;
 }
-
-
-
-/*int count = 0;
-   ifstream myfile;
-   myfile.open("init.txt");
-   string line;
-   while(getline(myfile, line))
-   {
-    istringstream buf(line);
-    istream_iterator<string> beg(buf), end;
-    vector<string> tokens(beg, end);
-    solarsystem[count].pos(0) = stof(tokens[0]);
-    solarsystem[count].pos(1) = stof(tokens[1]);
-    solarsystem[count].pos(2) = stof(tokens[2]);
-    solarsystem[count].vel(0) = stof(tokens[3]);
-    solarsystem[count].vel(1) = stof(tokens[4]);
-    solarsystem[count].vel(2) = stof(tokens[5]);
-    count++;
-   }
-   myfile.close();
- */
+//============================================================================
