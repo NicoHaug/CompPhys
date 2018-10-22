@@ -34,6 +34,12 @@ main.x: main.o $(OBJS)
 main.o: main.cpp
 	${CXX} ${CPPflags} -c $^ ${INCL} ${LIB}
 
+benchmark.x: benchmark.o
+	${CXX} ${CPPflags} -o $@ $^ ${INCL} ${LIB}
+
+benchmark.o: benchmark.cpp
+	${CXX} ${CPPflags} -c $^ ${INCL} ${LIB}	
+
 allPlanets.x: allPlanets.o $(OBJS)
 	${CXX} ${CPPflags} -o $@ $^ ${INCL} ${LIB}
 

@@ -2,8 +2,10 @@
 # -*- coding: utf-8 -*-
 
 import numpy as np
+import numpy.polynomial.polynomial as poly
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
+from scipy import stats
 import sys
 
 # Set fontsizes in figures
@@ -13,6 +15,14 @@ params = {'legend.fontsize': 'large',
           'xtick.labelsize': 'large',
           'ytick.labelsize': 'large'}
 plt.rcParams.update(params)
+
+
+def curvefit(x, y, deg=1):
+    coefs = poly.polyfit(x, y, deg)
+    ffit = poly.Polynomial(coefs)    # instead of np.poly1d
+    slope = coefs[1]
+    return ffit, slope
+
 
 if sys.argv[1] == "pos":
     file = "./Raw_Data/data.txt"
@@ -25,6 +35,33 @@ if sys.argv[1] == "pos":
     plt.plot(x, y)
     plt.gca().set_xlabel('$X$ [AU]')
     plt.gca().set_ylabel('$Y$ [AU]')
+    plt.show()
+
+if sys.argv[1] == "benchmark":
+    file = "./Raw_Data/benchmark.txt"
+    N = np.log10(np.loadtxt(file, usecols=0))
+    T_euler = np.log10(np.loadtxt(file, usecols=1))
+    T_verlet = np.log10(np.loadtxt(file, usecols=2))
+    # fit1, slope1 = curvefit(N, T_euler, 1)
+    # fit2, slope2 = curvefit(N, T_verlet, 1)
+    slope1, intercept1, r_value1, p_value1, std_err1 = stats.linregress(
+        N, T_euler)
+    slope2, intercept2, r_value2, p_value2, std_err2 = stats.linregress(
+        N, T_verlet)
+
+    fig = plt.figure()
+    plt.plot(N, T_euler, 'o:', label="Euler's Method")
+    #plt.plot(N, fit1(N), "-", lw=2, label='Slope: ' + str(slope1))
+    plt.plot(N, intercept1 + slope1 * N, '-',
+             label='Euler fitted line. Slope: ' + str(round(slope1, 4)))
+    plt.plot(N, T_verlet, 'o:', label="Verlet's Method")
+    plt.plot(N, intercept2 + slope2 * N, '-',
+             label='Verlet fitted line. Slope: ' + str(round(slope2, 4)))
+    #plt.plot(N, fit2(N), "-", lw=2, label='Slope: ' + str(slope2))
+    plt.gca().set_xlabel('$\\log_{10}(N)$')
+    plt.gca().set_ylabel('$\\log_{10}(T)$')
+    plt.legend(loc='best')
+    plt.grid(True)
     plt.show()
 
 if sys.argv[1] == "energy":
