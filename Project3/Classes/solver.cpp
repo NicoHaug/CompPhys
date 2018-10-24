@@ -103,7 +103,8 @@ void Solver::verlet(vec acc(vec, vec))
 
 
 //============================================================================
-void Solver::solve(int method, vec acc(vec, vec), double T, int N, int sampleN)
+void Solver::solve(int method, vec acc(vec, vec), double T, int N, int sampleN,
+                   string name)
 //----------------------------------------------------------------------------
 // Solve the system using either Euler's or Verlet's method
 //----------------------------------------------------------------------------
@@ -126,7 +127,7 @@ void Solver::solve(int method, vec acc(vec, vec), double T, int N, int sampleN)
 	}
 
 	ofstream myfile;
-	myfile.open("./Raw_Data/data.txt");
+	myfile.open(name);
 
 	totalAcc = zeros(3, numPlanets);
 	prevAcc = zeros(3, numPlanets);
@@ -236,5 +237,50 @@ double Solver::angularFluctuation()
 	double maxAngular = angularMomentum(angularMomentum.index_max());
 	double minAngular = angularMomentum(angularMomentum.index_min());
 	return abs((maxAngular - minAngular)/maxAngular);
+}
+//============================================================================
+
+
+//============================================================================
+void Solver::solvePerihelion(vec acc(vec, vec), double T, int N, string name)
+//----------------------------------------------------------------------------
+// Calculate perihelion precession
+//----------------------------------------------------------------------------
+{
+	dt = T/N;
+	pos = zeros(3, numPlanets);
+	vel = zeros(3, numPlanets);
+
+	for(int i=0; i<numPlanets; i++)
+	{
+		//initial conditions
+		pos.col(i) = planets[i].pos;
+		vel.col(i) = planets[i].vel;
+	}
+
+	ofstream myfile;
+	myfile.open(name);
+
+	totalAcc = zeros(3, numPlanets);
+	prevAcc = zeros(3, numPlanets);
+	vec prevPrevPos = pos.col(0);
+
+	totalAcceleration(totalAcc, acc);
+	verlet(acc);
+	vec prevPos = pos.col(0);
+
+	verlet(acc);
+
+	for(int i=0; i<N-1; i++)
+	{
+		if ((norm(prevPos) < norm(prevPrevPos)) and (norm(prevPos) < norm(pos.col(0))))
+		{
+			myfile << prevPos(1)/prevPos(0) << "\n";
+		}
+		prevPrevPos = prevPos;
+		prevPos = pos.col(0);
+		verlet(acc);
+	}
+	myfile.close();
 }
 //============================================================================

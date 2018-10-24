@@ -6,7 +6,7 @@ UNAME := $(shell uname)
 
 ifeq ($(UNAME), Darwin)
 INCL := -I /usr/local/Cellar/armadillo/9.100.5/include
-LIB := -DARMA_DONT_USE_WRAPPER -framework Accelerate
+LIB += -DARMA_DONT_USE_WRAPPER -framework Accelerate
 endif
 
 ifeq ($(UNAME), Linux)
@@ -15,30 +15,29 @@ LIB := -DARMA_DONT_USE_WRAPPER -lblas -llapack
 endif
 
 OBJS = planet.o solver.o
-TARGET1 = main.x
+TARGET1 = twoBody.x
 TARGET2 = allPlanets.x
-TARGET3 = test.x
-TARGET4 = escapeVel.x
-TARGET5 = earthAndJupiter.x
+TARGET3 = benchmark.x
+TARGET4 = escapeVelocity.x
+TARGET5 = threeBody.x
 TARGET6 = relativistic.x
+TARGET7 = test.x
 
-TARGETS = $(TARGET1) $(TARGET2) $(TARGET3) $(TARGET4) $(TARGET5) $(TARGET6)
+TARGETS = $(TARGET1) $(TARGET2) $(TARGET3) $(TARGET4) $(TARGET5) $(TARGET6) $(TARGET7)
 
 all: $(TARGETS)
 
-main: $(TARGET1)
-
-main.x: main.o $(OBJS)
+twoBody.x: twoBody.o $(OBJS)
 	${CXX} ${CPPflags} -o $@ $^ ${INCL} ${LIB}
 
-main.o: main.cpp
+twoBody.o: twoBody.cpp
 	${CXX} ${CPPflags} -c $^ ${INCL} ${LIB}
 
 benchmark.x: benchmark.o
 	${CXX} ${CPPflags} -o $@ $^ ${INCL} ${LIB}
 
 benchmark.o: benchmark.cpp
-	${CXX} ${CPPflags} -c $^ ${INCL} ${LIB}	
+	${CXX} ${CPPflags} -c $^ ${INCL} ${LIB}
 
 allPlanets.x: allPlanets.o $(OBJS)
 	${CXX} ${CPPflags} -o $@ $^ ${INCL} ${LIB}
@@ -46,16 +45,16 @@ allPlanets.x: allPlanets.o $(OBJS)
 allPlanets.o: allPlanets.cpp
 	${CXX} ${CPPflags} -c $^ ${INCL} ${LIB}
 
-escapeVel.x: main.o $(OBJS)
+escapeVelocity.x: escapeVelocity.o $(OBJS)
 	${CXX} ${CPPflags} -o $@ $^ ${INCL} ${LIB}
 
-escapeVel.o: main.cpp
+escapeVelocity.o: escapeVelocity.cpp
 	${CXX} ${CPPflags} -c $^ ${INCL} ${LIB}
 
-earthAndJupiter.x: earthAndJupiter.o $(OBJS)
+threeBody.x: threeBody.o $(OBJS)
 	${CXX} ${CPPflags} -o $@ $^ ${INCL} ${LIB}
 
-earthAndJupiter.o: earthAndJupiter.cpp
+threeBody.o: threeBody.cpp
 	${CXX} ${CPPflags} -c $^ ${INCL} ${LIB}
 
 relativistic.x: relativistic.o $(OBJS)

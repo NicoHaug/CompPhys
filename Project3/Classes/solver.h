@@ -62,9 +62,6 @@ private:
 	// Method solve() called is true
 	bool solved = false;
 
-	// Method solvedEnergy() is true
-	bool solvedEnergy = false;
-
 	// Static sun is true
 	bool staticSun = true;
 
@@ -87,7 +84,8 @@ public:
 	//=====================
 
 	// Solve the system using either Euler's or Verlet's method
-	void solve(int method, vec acc(vec, vec), double T, int N, int sampleN);
+	void solve(int method, vec acc(vec, vec), double T, int N, int sampleN,
+	           string name);
 
 	// Calculate energy and angular momentum
 	void sampleEnergyAndAngular(mat &kinetic, mat &potential, vec &angular,
@@ -104,6 +102,9 @@ public:
 
 	// Find fluctuation of the angular momentum of planet x
 	double angularFluctuation();
+
+	// Calculate perihelion precession
+	void solvePerihelion(vec acc(vec, vec), double T, int N, string name);
 };
 //=============================================================================
 

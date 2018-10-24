@@ -29,7 +29,7 @@ int main()
 //----------------------------------------------------------------------------
 {
 
-	double T = 1; // Simulation time
+	double T = 5; // Simulation time
 	ofstream myfile;
 	myfile.open("./Raw_Data/benchmark.txt");
 

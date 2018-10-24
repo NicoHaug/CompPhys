@@ -15,7 +15,7 @@ using namespace arma;
 
 //=================================
 // Global variable(s)
-double G = 4*M_PI*M_PI;      // Gravitational constant
+double GM = 4*M_PI*M_PI;      // Gravitational constant*1 solar mass
 
 
 //===================================
@@ -29,7 +29,7 @@ inline vec newton(vec pos, vec vel)
 //----------------------------------------------------------------------------
 {
 	double rCube = pow(norm(pos), 3);
-	return -G/rCube*pos;
+	return -GM/rCube*pos;
 }
 //============================================================================
 
@@ -39,28 +39,14 @@ inline vec newton(vec pos, vec vel)
 //============================================================================
 int main(int argc, char *argv[])
 //----------------------------------------------------------------------------
-// Simulate motion of the Solar System
-//
-// Command line arguments:
-// T - simulation time [years]
-// N - number of integration points
-// n - sample point interval
+// Simulate the motion of all planets of the Solar System
 //----------------------------------------------------------------------------
 {
-	// Check if the user is supplying enough commandline arguments
-	if (argc < 4)
-	{
-		cout << "Bad usage! \n";
-		cout << "Please supply:\n";
-		cout << "Simulation time T\n";
-		cout << "Number of time points N\n";
-		cout << "Sample point interval sampleN"<< endl;
-		return 1;
-	}
 
-	double T = atof(argv[1]);
-	int N = atoi(argv[2]);
-	int sampleN = atoi(argv[3]);
+
+	double T = 250;            // simulation time [years]
+	int N = 1000000;          // N - number of integration points
+	int sampleN = 10;         // n - sample point interval
 
 	// Initialize celestial bodies in the Solar System
 	double M_sun = 1.0;              // [solar mass]
@@ -121,10 +107,10 @@ int main(int argc, char *argv[])
 	}
 
 	// Initialize solver(s)
-	Solver solverVerlet(solarsystem, G, false);
+	Solver solverVerlet(solarsystem, GM, false);
 
 	// Solve
-	solverVerlet.solve(2, newton, T, N, sampleN);
+	solverVerlet.solve(2, newton, T, N, sampleN, "./Raw_Data/data.txt");
 	system("python3 plot.py all");
 
 
