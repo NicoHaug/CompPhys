@@ -134,6 +134,15 @@ if sys.argv[1] == "fluctuation":
     plt.legend(loc='best')
     fig.savefig("./Results/fluctuation_%s.pdf" % label_)
 
+    if label_ == "Euler" or label_ == "Verlet":
+        y2 = np.loadtxt(file, usecols=2)
+        fig = plt.figure()
+        plt.plot(np.log10(n), np.log10(y2))
+        plt.gca().set_xlabel('$\\log_{10}(N)$')
+        plt.gca().set_ylabel('$\\log_{10}(\\eta)$')
+        plt.grid(True)
+        fig.savefig("results/fluctuation_angular_%s.pdf" % label_)
+
 
 # -------------------------------------------------------------------------
 # Plot different initial velocities to find escape velocity
@@ -205,39 +214,6 @@ if sys.argv[1] == "all":
     pos_neptune = np.loadtxt(file, usecols=(24, 25, 26))
     pos_pluto = np.loadtxt(file, usecols=(27, 28, 29))
 
-    # 2D plot
-    """
-    plt.figure()
-    plt.gca().set_aspect("equal")
-    # plt.style.use('dark_background')
-    plt.grid(False)
-    plt.plot(pos_sun[:, 0], pos_sun[:, 1],
-             'yo', label='Sun', markersize=5)
-    plt.plot(pos_mercury[:, 0], pos_mercury[:, 1],
-             color='darkslategrey', label='Mercury')
-    plt.plot(pos_venus[:, 0], pos_venus[:, 1],
-             color='tan', label='Venus')
-    plt.plot(pos_earth[:, 0], pos_earth[:, 1],
-             color='deepskyblue', label='Earth')
-    plt.plot(pos_mars[:, 0], pos_mars[:, 1],
-             color='tomato', label='Mars')
-    plt.plot(pos_jupiter[:, 0], pos_jupiter[:, 1],
-             color='orange', label='Jupiter')
-    plt.plot(pos_saturn[:, 0], pos_saturn[:, 1],
-             color='olive', label='Saturn')
-    plt.plot(pos_uranus[:, 0], pos_uranus[:, 1],
-             color='darkviolet', label='Uranus')
-    plt.plot(pos_neptune[:, 0], pos_neptune[:, 1],
-             color='darkblue', label='Neptune')
-    plt.plot(pos_pluto[:, 0], pos_pluto[:, 1],
-             color='black', label='Pluto')
-
-    plt.subplots_adjust(right=0.68)
-    plt.legend(loc='center left', bbox_to_anchor=(1.04, 0.5),
-               fancybox=True, borderaxespad=0, ncol=1)
-    plt.show()
-    """
-
     # All planets
     fig = plt.figure(figsize=(15, 15))
     plt.gcf().add_subplot(111, projection='3d')
@@ -297,7 +273,6 @@ if sys.argv[1] == "all":
     fig = plt.figure(figsize=(15, 15))
     plt.gcf().add_subplot(111, projection='3d')
     plt.gca().set_aspect("equal")
-    # plt.style.use('dark_background')
     plt.grid(False)
     plt.plot(pos_sun[:, 0], pos_sun[:, 1],
              pos_sun[:, 2], 'yo', label='Sun', markersize=15)
@@ -317,19 +292,58 @@ if sys.argv[1] == "all":
     plt.legend(loc='best', prop={'size': 20})
     fig.savefig("./Results/outerPlanets.png")
 
+    # Earth-Jupiter-Sun
+    fig = plt.figure(figsize=(10, 10))
+    plt.gcf().add_subplot(111, projection='3d')
+    plt.gca().set_aspect("equal")
+    plt.grid(False)
+    plt.plot(pos_sun[:, 0], pos_sun[:, 1],
+             pos_sun[:, 2], 'yo', label='Sun', markersize=15)
+    plt.plot(pos_earth[:, 0], pos_earth[:, 1],
+             pos_earth[:, 2], color='deepskyblue', label='Earth')
+    plt.plot(pos_jupiter[:, 0], pos_jupiter[:, 1],
+             pos_jupiter[:, 2], color='orange', label='Jupiter')
+    plt.gca().dist = 7.7
+    plt.gca().set_xlabel('$X$ [AU]')
+    plt.gca().set_ylabel('$Y$ [AU]')
+    plt.gca().set_zlabel('$Z$ [AU]')
+    plt.gca().set_zlim(-2.5, 2.5)
+    plt.legend(loc='best', prop={'size': 20})
+    fig.savefig("./Results/threeBodyDynamic.png")
+
 
 # -------------------------------------------------------------------------
 # Plot the precession of the perihelion of Mercury
 # -------------------------------------------------------------------------
 if sys.argv[1] == "precession":
+    rad_to_arcsec = (360 * 60 * 60) / (np.pi)
     file1 = "./Raw_Data/angle1.txt"
-    angle = np.loadtxt(file1, usecols=0)
-    fig = plt.figure()
-    plt.plot(np.arctan(angle))
-    fig.savefig("./Results/precessionNewton.pdf")
+    radians = np.arctan(np.loadtxt(file1, usecols=0))
+    arcseconds = radians * rad_to_arcsec
+    t = np.linspace(0, 100, len(arcseconds))
+    slope1, intercept1, r_value1, p_value1, std_err1 = stats.linregress(
+        t, arcseconds)
 
     file2 = "./Raw_Data/angle2.txt"
-    angle = np.loadtxt(file2, usecols=0)
-    fig = plt.figure()
-    plt.plot(np.arctan(angle))
-    fig.savefig("./Results/precessionEinstein.pdf")
+    radians2 = np.arctan(np.loadtxt(file2, usecols=0))
+    arcseconds2 = radians2 * rad_to_arcsec
+    slope2, intercept2, r_value2, p_value2, std_err2 = stats.linregress(
+        t, arcseconds2)
+
+    fig = plt.figure(figsize=(10, 5))
+    plt.plot(t, arcseconds, label="Newton precession")
+    plt.plot(t, intercept1 + slope1 * t, 'r', lw=2,
+             label='Newton fitted line.\nSlope:' + str(round(slope1, 4)))
+    plt.plot(t, arcseconds2, label="Einsten precession")
+    plt.plot(t, intercept2 + slope2 * t, 'k', lw=2,
+             label='Einstein fitted line.\nSlope:' + str(round(slope2, 4)))
+    plt.gca().set_xlabel("$T$ [yr]")
+    plt.gca().set_ylabel("$\\theta_p$ [arcseconds]")
+    plt.ticklabel_format(style='sci', axis='y', scilimits=(0, 0))
+    plt.legend(loc='best')
+    fig.savefig("./Results/precession.pdf")
+
+    # precession = fit(100) - fit(0)
+    precession = (intercept2 + slope2 *
+                  t[100]) - ((intercept2 + slope2 * t[0]))
+    print(precession)

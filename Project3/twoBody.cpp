@@ -90,25 +90,27 @@ int main(int argc, char const *argv[])
 	myfile.close();
 	system("python3 plot.py energy");
 
-	// Calculate energy fluctation with Euler's method
+	// Calculate energy and angular momentum fluctation with Euler's method
 	myfile.open("./Raw_Data/fluctuation.txt");
 	for(int n = 100; n<=1e8; n*=10)
 	{
 		Solver solver(solarsystem, G, true);
 		solver.solve(1, newton, T, n, n/10, "./Raw_Data/data.txt");
-		myfile << n << " " << solver.totalEnergyFluctuation() << "\n";
+		myfile << n << " " << solver.totalEnergyFluctuation() << " " <<
+		        solver.angularFluctuation() << "\n";
 		cout << n << endl;
 	}
 	myfile.close();
 	system("python3 plot.py fluctuation Euler");
 
-	// Calculate energy fluctation with Verlet's method
+	// Calculate energy and angular momentum fluctation with Verlet's method
 	myfile.open("./Raw_Data/fluctuation.txt");
 	for(int n = 100; n<=1e8; n*=10)
 	{
 		Solver solver(solarsystem, G, true);
 		solver.solve(2, newton, T, n, n/10, "./Raw_Data/data.txt");
-		myfile << n << " " << solver.totalEnergyFluctuation() << "\n";
+		myfile << n << " " << solver.totalEnergyFluctuation() << " " <<
+		        solver.angularFluctuation() << "\n";
 		cout << n << endl;
 	}
 	myfile.close();

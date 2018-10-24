@@ -57,27 +57,19 @@ int main(int argc, char *argv[])
 
 
 	double T = 100;            // simulation time [years]
-	int N = 1000000;          // N - number of integration points
-
-	double M_sun = 1.0;              // [solar mass]
+	int N = 10000000;          // N - number of integration points
 
 	// Initialize celestial bodies in the Solar System
-	vec pos_mercury = vec({-1.323E-01, -4.393E-01, -2.444E-02}); // [AU]
-	vec vel_mercury = vec({2.132E-02, 6.577E-03, -2.494E-03});   // [AU/day]
-	vel_mercury *= 365.25;                                       // [AU/yr]
-	double M_mercury = 0.166E-6;                                 // [solar mass]
-	Planet Sun(vec({0,0,0}), vec({0,0,0}), M_sun);
-	Planet Mercury(pos_mercury, vel_mercury, M_mercury);
-	vector<Planet> solarsystem = vector<Planet>{Sun, Mercury};
+	vec pos_mercury = vec({4.508643080267578E-02, -4.492276414436671E-01, -4.152907939875187E-02}); // [AU]
+	vec vel_mercury = vec({2.234601746773343E-02, 4.225668557407336E-03, -1.705402587866491E-03}); // [AU/day]
+	vel_mercury *= 365.242199;  // [AU/yr]
+	double M_mercury = 1.65956463e-7; // [solar mass]
 
-	// Set motion properties of the Sun
-	for (unsigned int i=1; i<solarsystem.size(); i++) {
-		solarsystem[0].pos -= 1/solarsystem[0].M*solarsystem[i].M*solarsystem[i].pos;
-		solarsystem[0].vel -= 1/solarsystem[0].M*solarsystem[i].M*solarsystem[i].vel;
-	}
+	Planet Mercury(pos_mercury, vel_mercury, M_mercury);
+	vector<Planet> solarsystem = vector<Planet>{Mercury};
 
 	// Initialize solver
-	Solver solver(solarsystem, GM, false);
+	Solver solver(solarsystem, GM, true);
 
 	// Solve motion
 	solver.solvePerihelion(newton, T, N, "./Raw_Data/angle1.txt");
