@@ -20,4 +20,4 @@ os.system("./allPlanets.x")
 os.system("./relativistic.x")
 
 # Clean
-#os.system("make clean")
+os.system("make clean")
