@@ -57,12 +57,10 @@ int main(int argc, char *argv[])
 
 
 	double T = 100;            // simulation time [years]
-	int N = 10000000;          // N - number of integration points
+	int N = 1000000000;          // N - number of integration points
 
-	// Initialize celestial bodies in the Solar System
-	vec pos_mercury = vec({4.508643080267578E-02, -4.492276414436671E-01, -4.152907939875187E-02}); // [AU]
-	vec vel_mercury = vec({2.234601746773343E-02, 4.225668557407336E-03, -1.705402587866491E-03}); // [AU/day]
-	vel_mercury *= 365.242199;  // [AU/yr]
+	vec pos_mercury = vec({0.3075, 0, 0}); // [AU]
+	vec vel_mercury = vec({0, 12.44, 0}); // [AU/yr]
 	double M_mercury = 1.65956463e-7; // [solar mass]
 
 	Planet Mercury(pos_mercury, vel_mercury, M_mercury);

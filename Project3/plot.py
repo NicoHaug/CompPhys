@@ -8,8 +8,8 @@ this project
 
 import numpy as np
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
 from scipy import stats
+import numpy.polynomial.polynomial as poly
 import sys
 
 # Set fontsizes in figures
@@ -18,22 +18,15 @@ params = {'legend.fontsize': 'x-large',
           'axes.titlesize': 'x-large',
           'xtick.labelsize': 'x-large',
           'ytick.labelsize': 'x-large'}
-#'figure.figsize': [10, 10]}
 plt.rcParams.update(params)
 
 
-if sys.argv[1] == "pos":
-    file = "./Raw_Data/data.txt"
+def curvefit(x, y, deg=1):
+    coefs = poly.polyfit(x, y, deg)
+    ffit = poly.Polynomial(coefs)    # instead of np.poly1d
+    slope = coefs[1]
+    return ffit, slope
 
-    x = np.loadtxt(file, usecols=0)
-    y = np.loadtxt(file, usecols=1)
-
-    fig = plt.figure()
-    plt.gca().set_aspect("equal")
-    plt.plot(x, y)
-    plt.gca().set_xlabel('$X$ [AU]')
-    plt.gca().set_ylabel('$Y$ [AU]')
-    plt.show()
 
 # -------------------------------------------------------------------------
 # Plot the orbit of Earth in the Earth-Sun system
@@ -163,6 +156,35 @@ if sys.argv[1] == "escapeVel":
     # plt.legend(mylegend)
     plt.legend(loc='best')
     fig.savefig("./Results/escapeVel.pdf")
+
+
+# -------------------------------------------------------------------------
+# Plot inverse-square -> inverse-cube gravity
+# -------------------------------------------------------------------------
+if sys.argv[1] == "beta":
+    file = "./Raw_Data/data.txt"
+
+    name = sys.argv[2]
+    if name == "beta1":
+        labelname = "$1/r^{2.5}$"
+    elif name == "beta2":
+        labelname = "$1/r^3$"
+
+    x = np.loadtxt(file, usecols=0)
+    y = np.loadtxt(file, usecols=1)
+
+    fig = plt.figure(figsize=(10, 10))
+    plt.gca().set_aspect("equal")
+    plt.plot([0, 0], [0, 0], 'o', color='orange', label='Sun', markersize=25)
+    plt.plot(x[0], y[0], 'o', color='deepskyblue',
+             label='Earth, initial position', mfc='none', markersize=10)
+    plt.plot(x, y, ':', color='deepskyblue', label=labelname)
+    plt.plot(x[-1], y[-1], 'o', color='deepskyblue',
+             label='Earth, final position', markersize=10)
+    plt.gca().set_xlabel('$X$ [AU]')
+    plt.gca().set_ylabel('$Y$ [AU]')
+    plt.legend(loc='upper right')
+    fig.savefig("./Results/earthBeta_%s.pdf" % (name))
 
 
 # -------------------------------------------------------------------------
@@ -316,7 +338,8 @@ if sys.argv[1] == "all":
 # Plot the precession of the perihelion of Mercury
 # -------------------------------------------------------------------------
 if sys.argv[1] == "precession":
-    rad_to_arcsec = (360 * 60 * 60) / (np.pi)
+
+    rad_to_arcsec = (360 * 60 * 60) / (2 * np.pi)
     file1 = "./Raw_Data/angle1.txt"
     radians = np.arctan(np.loadtxt(file1, usecols=0))
     arcseconds = radians * rad_to_arcsec
@@ -331,19 +354,13 @@ if sys.argv[1] == "precession":
         t, arcseconds2)
 
     fig = plt.figure(figsize=(10, 5))
-    plt.plot(t, arcseconds, label="Newton precession")
-    plt.plot(t, intercept1 + slope1 * t, 'r', lw=2,
-             label='Newton fitted line.\nSlope:' + str(round(slope1, 4)))
     plt.plot(t, arcseconds2, label="Einsten precession")
     plt.plot(t, intercept2 + slope2 * t, 'k', lw=2,
              label='Einstein fitted line.\nSlope:' + str(round(slope2, 4)))
+    plt.plot(t, arcseconds, label="Newton precession")
+    plt.plot(t, intercept1 + slope1 * t, 'r', lw=2,
+             label='Newton fitted line.\nSlope:' + str(round(slope1, 4)))
     plt.gca().set_xlabel("$T$ [yr]")
     plt.gca().set_ylabel("$\\theta_p$ [arcseconds]")
-    plt.ticklabel_format(style='sci', axis='y', scilimits=(0, 0))
     plt.legend(loc='best')
     fig.savefig("./Results/precession.pdf")
-
-    # precession = fit(100) - fit(0)
-    precession = (intercept2 + slope2 *
-                  t[100]) - ((intercept2 + slope2 * t[0]))
-    print(precession)
