@@ -13,4 +13,12 @@ Repository for projects in FYS3150.
 
 ### Project 3
 
-[Project 3](https://github.com/nicolossus/FYS3150/tree/master/Project3): In this project we developed a model simulating the motion of the planets in the Solar System by using the Verlet method to integrate Newton's equations of motion. 
+[Project 3](https://github.com/nicolossus/FYS3150/tree/master/Project3): In this project we developed a model simulating the motion of the planets in the Solar System by using the Verlet method to integrate Newton's equations of motion.
+
+### Project 4
+
+[Project 4](https://github.com/nicolossus/FYS3150/tree/master/Project4): In this project we simulate phase transitions with the Ising model in two dimensions. We use the Monte Carlo method known as the The Metropolis algorithm to calculate Ising model estimations.
+
+### Project 5
+
+[Project 5](https://github.com/nicolossus/FYS3150/tree/master/Project5): 
