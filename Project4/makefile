@@ -1,4 +1,3 @@
-CC = gcc
 CXX = g++
 CPPflags = -g -Wall -std=c++11 -O3
 
@@ -14,18 +13,27 @@ INCL :=
 LIB := -DARMA_DONT_USE_WRAPPER -lblas -llapack
 endif
 
-OBJS =
+OBJS = metropolis.o
 TARGET1 = main.x
 
 TARGETS = $(TARGET1)
 
+.PHONY: all
+
 all: $(TARGETS)
 
 main.x: main.o $(OBJS)
-	${CXX} ${CPPflags} -o $@ $^ ${INCL} ${LIB}
+	${CXX} -o $@ $^ 
+	./main.x
+	rm -f main.o main.x
 
 main.o: main.cpp
 	${CXX} ${CPPflags} -c $^ ${INCL} ${LIB}
+
+metropolis.o:
+	${CXX} ${CPPflags} -c ./Classes/metropolis.cpp ${INCL} ${LIB}
+
+.PHONY: clean
 
 clean:
 	rm -f *.o *.txt *.x

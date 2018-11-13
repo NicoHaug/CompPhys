@@ -1,32 +1,15 @@
 //=================================
 // Included dependencies
-#include <iostream>
-#include <iomanip>
-#include <string>
-#include <vector>
-#include <fstream>
-#include <sstream>
+
+ #include <iostream>
+ #include <armadillo>
+ #include <cmath>
+ #include <random>
+ #include "./Classes/metropolis.hpp"
+ #include <map>
 
 using namespace std;
-
-//=================================
-// Global variable(s)
-
-//===================================
-//------------ FUNCTIONS ------------
-//===================================
-
-//============================================================================
-inline double template (double T, int N)
-//----------------------------------------------------------------------------
-// Short description
-//----------------------------------------------------------------------------
-{
-	return 0;
-}
-//============================================================================
-
-
+using namespace arma;
 
 //============================================================================
 //-------------------------------- MAIN --------------------------------------
@@ -34,25 +17,17 @@ inline double template (double T, int N)
 int main(int argc, char const *argv[])
 //----------------------------------------------------------------------------
 // Short description
-//
-// Command line arguments:
-// T - simulation time
-// N - number of integration points
 //----------------------------------------------------------------------------
 {
-	// Check if the user is supplying enough commandline arguments
-	if (argc < 3)
-	{
-		cout << "Bad usage! \n";
-		cout << "Please supply:\n";
-		cout << "Simulation time T\n";
-		cout << "Number of integration points N" << endl;
-		return 1;
-	}
 
-	double T = atof(argv[1]);
-	int N = atoi(argv[2]);
+	int L = 2;   // Lattice
+	double T= 1; // Temperature
+	int J = 1;   // Coupling
+	int MCcycles = 100000;  // number of MC cycles
 
+	Metropolis ising(L, T, J);
+	ising.solve(MCcycles);
+	cout << "Accepted configurations: " << ising.accepted << " of " << MCcycles << endl;
 
 
 	return 0;

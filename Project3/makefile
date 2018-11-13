@@ -84,4 +84,4 @@ cleanRaw:
 	rm -f ./Raw_data/*.txt
 
 cleanResults:
-	rm -f ./Results/*.txt ./Results/*.png
+	rm -f ./Results/*.txt ./Results/*.png ./Results/*.pdf

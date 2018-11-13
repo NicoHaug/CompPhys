@@ -2,8 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-This program contains plotting procedures for producing the results in
-this project
+This program contains plotting procedures for the results in this project
 """
 
 import numpy as np

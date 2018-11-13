@@ -17,8 +17,8 @@ Repository for projects in FYS3150.
 
 ### Project 4
 
-[Project 4](https://github.com/nicolossus/FYS3150/tree/master/Project4): In this project we simulate phase transitions with the Ising model in two dimensions. We use the Monte Carlo method known as the The Metropolis algorithm to calculate Ising model estimations.
+[Project 4](https://github.com/nicolossus/FYS3150/tree/master/Project4): In this project we simulate phase transitions with the Ising model in two dimensions. We use the Monte Carlo method known as the the Metropolis algorithm to calculate Ising model estimations.
 
 ### Project 5
 
-[Project 5](https://github.com/nicolossus/FYS3150/tree/master/Project5): 
+[Project 5](https://github.com/nicolossus/FYS3150/tree/master/Project5):
