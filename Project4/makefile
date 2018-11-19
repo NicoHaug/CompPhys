@@ -1,11 +1,12 @@
-CXX = g++
+CC = gcc
+CXX = mpic++
 CPPflags = -g -Wall -std=c++11 -O3
 
 UNAME := $(shell uname)
 
 ifeq ($(UNAME), Darwin)
 INCL := -I /usr/local/Cellar/armadillo/9.100.5/include
-LIB += -DARMA_DONT_USE_WRAPPER -framework Accelerate
+LIB := -DARMA_DONT_USE_WRAPPER -framework Accelerate
 endif
 
 ifeq ($(UNAME), Linux)
@@ -13,30 +14,17 @@ INCL :=
 LIB := -DARMA_DONT_USE_WRAPPER -lblas -llapack
 endif
 
-OBJS = metropolis.o
-TARGET1 = main.x
+simulation.x: simulation.o ising.o metropolis.o
+	${CXX} ${CPPflags} -o $@ $^ ${INCL} ${LIB}
 
-TARGETS = $(TARGET1)
-
-.PHONY: all
-
-all: $(TARGETS)
-
-main.x: main.o $(OBJS)
-	${CXX} -o $@ $^ 
-	./main.x
-	rm -f main.o main.x
-
-main.o: main.cpp
+simulation.o: simulation.cpp
 	${CXX} ${CPPflags} -c $^ ${INCL} ${LIB}
 
-metropolis.o:
-	${CXX} ${CPPflags} -c ./Classes/metropolis.cpp ${INCL} ${LIB}
+ising.o: classes/ising.cpp
+	g++ ${CPPflags} -c $^ ${INCL} ${LIB}
 
-.PHONY: clean
+metropolis.o: classes/metropolis.cpp
+	g++ ${CPPflags} -c $^ ${INCL} ${LIB}
 
 clean:
 	rm -f *.o *.txt *.x
-
-cleanResults:
-	rm -f ./Results/*.txt ./Results/*.png ./Results/*.pdf

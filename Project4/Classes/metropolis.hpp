@@ -5,15 +5,16 @@
 
 //=================================
 // Included dependencies
-#include <iostream>
+#include <cstdlib>
 #include <armadillo>
+#include <fstream>
 #include <cmath>
-#include <random>
 #include <map>
+#include <random>
+#include "ising.hpp"
 
 using namespace std;
 using namespace arma;
-
 
 //=============================================================================
 //-------------------------------- CLASS --------------------------------------
@@ -27,67 +28,38 @@ private:
 	//==========================
 	// Declare private variables
 	//==========================
-	Mat<int> spinMatrix;   // Matrix with spin configurations
-	map<double, double> denergy;
-
-	//=====================
-	// Private methods
-	//=====================
-
-	// Periodic Boundary Conditions
-	int PBC(int index, int correction, int limit);
-
-	// Initialize lattice and characteristics
-	void initialize();
-
+	Ising spins;              // Instance of Ising model
+	double acceptAmp;         // Acceptance amplitude
 
 public:
 	//==========================
 	// Declare public variables
 	//==========================
-	int L;                 // Lattice Dimenstionality LxL
-	double J;              // Coupling constant
-	double T;              // Temperature
-	double energy;         // Energy of the system
-	double magneticMoment;  // Magnetization of the system
-	double deltaE;         // Energy change when spin flip
-	double deltaM;         //change in magnetization when flipping single spin
-	int accepted;          // number of accepted flips
-	bool randomConfig;     // Random spin configuration is true, ordered=false
-	vec ExpectationValues;
-	int MCcycles;
+	int* energyAndMag;        // All sampled values of energy and magnetization
+	int E;                    // Present energy
+	int M;                    // Present magnetization
+	int accepted;             // Number of accepted states
+	uniform_real_distribution<float> rand_float;  // Random number generator
 
-
-	//================
-	// CONSTRUCTOR(S)
-	//================
-	Metropolis();
-
-	Metropolis(int L, double T, double J);
-
-	Metropolis(int L, double T, double J, bool randomConfig);
-
+	//==============
+	// CONSTRUCTOR
+	//==============
+	Metropolis(Ising spins);
 
 	//================
 	// DESTRUCTOR
 	//================
-	~Metropolis();
-
+	/*
+	   ~Metropolis(){
+	   };
+	 */
 
 	//=====================
 	// Public methods
 	//=====================
 
 	// Metropolis algorithm
-	void solve(int MCcycles);
-
-	// Solve with MPI
-	void solve_MPI(int MCcycles);
-
-	// Output results
-	void output();
-
-
+	void solve(int cycles, mt19937_64 &engine);
 };
 //=============================================================================
 
