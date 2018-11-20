@@ -23,7 +23,7 @@ N = [1000, 2000, 3000, 4000, 5000, 6000]
 
 for n in N:
     os.system("mpirun -np 1 ./simulation.x %s 0 20 2 1" % n)
-    accepted.append(np.loadtxt("./results/meta.txt", usecols=0)[5])
+    accepted.append(np.loadtxt("./Results/meta.txt", usecols=0)[5])
 
 fig = plt.figure()
 plt.plot(N, accepted, "o-")
@@ -32,13 +32,13 @@ plt.ylabel("Accepted States")
 plt.legend(["20x20 Lattice\nT = 2 $[\,J/k_B\,]$"])
 plt.gcf().set_tight_layout(True)
 plt.grid()
-fig.savefig("./plots/acceptedCycles.pdf")
+fig.savefig("./Plots/acceptedCycles.pdf")
 
 accepted = []
 T = np.linspace(1, 3, 20)
 for t in T:
     os.system("mpirun -np 1 ./simulation.x 10000 0 20 %s 1" % t)
-    accepted.append(np.loadtxt("./results/meta.txt", usecols=0)[5])
+    accepted.append(np.loadtxt("./Results/meta.txt", usecols=0)[5])
 
 accepted = np.array(accepted) / 10000
 
@@ -49,4 +49,4 @@ plt.ylabel("Accepted States per Sweep")
 plt.legend(["20x20 Lattice\n 10000 cycles"])
 plt.gcf().set_tight_layout(True)
 plt.grid()
-fig.savefig("./plots/acceptedTemp.pdf")
+fig.savefig("./Plots/acceptedTemp.pdf")

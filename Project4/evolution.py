@@ -20,12 +20,12 @@ T_step = float(sys.argv[6])
 
 N = int(m.ceil((T_end - T_start) / T_step))
 
-file = open("./results/evolution_L=%s.txt" % L, "w")
+file = open("./Results/evolution_L=%s.txt" % L, "w")
 
 for i in range(N + 1):
     os.system("mpirun -np 2 ./simulation.x %s %s %s %s %s" %
               (cycles, cutoff, L, (T_start + i * T_step), i))
-    expect = np.loadtxt("./results/expectation.txt", usecols=0)
+    expect = np.loadtxt("./Results/expectation.txt", usecols=0)
     for val in expect:
         file.write("%s " % val)
     file.write("\n")

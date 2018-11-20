@@ -18,7 +18,7 @@ params = {'legend.fontsize': 'x-large',
 plt.rcParams.update(params)
 
 L = np.array([40, 60, 100, 160])
-t = np.loadtxt("./results/evolution_L=40.txt", usecols=0)
+t = np.loadtxt("./Results/evolution_L=40.txt", usecols=0)
 
 E = []
 M = []
@@ -26,7 +26,7 @@ Cv = []
 X = []
 
 for l in L:
-    file = "./results/evolution_L=%s.txt" % (l)
+    file = "./Results/evolution_L=%s.txt" % (l)
     E.append(np.loadtxt(file, usecols=1))
     M.append(np.loadtxt(file, usecols=2))
     Cv.append(np.loadtxt(file, usecols=3))
@@ -44,7 +44,7 @@ plt.xlabel("$1/L$")
 plt.ylabel("$T_c$ $[\,J/k_B\,]$")
 plt.legend(["Finite Lattice", "%.4f x + %.4f" % (fit[0], fit[1])])
 plt.grid()
-fig.savefig("./plots/critTemp.pdf")
+fig.savefig("./Plots/critTemp.pdf")
 
 fig = plt.figure()
 for i in range(len(L)):
@@ -54,7 +54,7 @@ plt.ylabel("$\\langle E \\rangle /L^2$ $[\,J\,]$")
 plt.legend(["40x40 Lattice", "60x60 Lattice", "100x100 Lattice",
             "160x160 Lattice"])
 plt.grid()
-fig.savefig("./plots/evolution_energy.pdf")
+fig.savefig("./Plots/evolution_energy.pdf")
 
 fig = plt.figure()
 for i in range(len(L)):
@@ -64,7 +64,7 @@ plt.ylabel("$\\langle |M| \\rangle /L^2$")
 plt.legend(["40x40 Lattice", "60x60 Lattice", "100x100 Lattice",
             "160x160 Lattice"])
 plt.grid()
-fig.savefig("./plots/evolution_magnetization.pdf")
+fig.savefig("./Plots/evolution_magnetization.pdf")
 
 fig = plt.figure()
 for i in range(len(L)):
@@ -74,7 +74,7 @@ plt.ylabel("$ C_V /L^2$ $[\,k_B\,]$")
 plt.legend(["40x40 Lattice", "60x60 Lattice", "100x100 Lattice",
             "160x160 Lattice"])
 plt.grid()
-fig.savefig("./plots/evolution_cv.pdf")
+fig.savefig("./Plots/evolution_cv.pdf")
 
 fig = plt.figure()
 for i in range(len(L)):
@@ -84,4 +84,4 @@ plt.ylabel("$\\chi /L^2$")
 plt.legend(["40x40 Lattice", "60x60 Lattice", "100x100 Lattice",
             "160x160 Lattice"])
 plt.grid()
-fig.savefig("./plots/evolution_susceptibility.pdf")
+fig.savefig("./Plots/evolution_susceptibility.pdf")

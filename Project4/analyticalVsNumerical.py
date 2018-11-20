@@ -20,7 +20,7 @@ plt.rcParams.update(params)
 
 N = sys.argv[1]
 
-file = "./results/evolution_L=2.txt"
+file = "./Results/evolution_L=2.txt"
 t = np.loadtxt(file, usecols=0)
 T = np.linspace(t[0], t[-1], 1000)
 E_anal = -(8 * np.sinh(8 / T)) / (np.cosh(8 / T) + 3) / 4
@@ -70,4 +70,4 @@ plt.legend(["Analytical", "Numerical"], loc="best")
 plt.grid()
 
 plt.gcf().set_tight_layout(True)
-fig.savefig("./plots/numericalVsAnalytical_N=%s.pdf" % N)
+fig.savefig("./Plots/numericalVsAnalytical_N=%s.pdf" % N)

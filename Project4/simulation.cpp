@@ -6,8 +6,8 @@
 #include <cmath>
 #include <map>
 #include <random>
-#include "classes/ising.hpp"
-#include "classes/metropolis.hpp"
+#include "Classes/ising.hpp"
+#include "Classes/metropolis.hpp"
 //#include "/usr/include/mpi/mpi.h" // Linux
 #include "mpi.h" // Darwin
 
@@ -51,7 +51,7 @@ int main(int argc, char *argv[])
 	if(my_rank == 0)
 	{
 		MPI_Status status;
-		ofstream file("./results/data.dat", ofstream::binary);
+		ofstream file("./Results/data.dat", ofstream::binary);
 		file.write(reinterpret_cast<const char*>(local),
 		           2*cycles*sizeof(int));
 		cout << "Numbers of accepted states: " << MC.accepted << endl;
@@ -74,7 +74,7 @@ int main(int argc, char *argv[])
 		cout << finish - start << " seconds" << endl;
 		cout << "Done!" << endl;
 		ofstream meta;
-		meta.open("./results/meta.txt");
+		meta.open("./Results/meta.txt");
 		meta << cycles << endl;
 		meta << cutoff << endl;
 		meta << numprocs << endl;
