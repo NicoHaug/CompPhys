@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-This program contains plotting procedures for plotting the thermodynamical
+This program contains plotting procedures for plotting the thermodynamic
 quantities around a phase transition
 """
 

@@ -36,9 +36,6 @@ private:
 	// Private methods
 	//=====================
 
-	// Periodic boundary conditions
-	int periodic(int x);
-
 	// Initialize parameters
 	void init(int L, double T, double J, mt19937_64 &engine);
 
@@ -67,14 +64,15 @@ public:
 	//================
 	// DESTRUCTOR
 	//================
-	/*
-	   ~Ising(){
-	   };
-	 */
+	~Ising();
+
 
 	//=====================
 	// Public methods
 	//=====================
+
+	// Periodic boundary conditions
+	int periodic(int x);
 
 	// Calculate Ising model energy
 	void calcEnergy();

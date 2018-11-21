@@ -49,10 +49,8 @@ public:
 	//================
 	// DESTRUCTOR
 	//================
-	/*
-	   ~Metropolis(){
-	   };
-	 */
+	~Metropolis();
+
 
 	//=====================
 	// Public methods

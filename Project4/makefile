@@ -20,10 +20,17 @@ simulation.x: simulation.o ising.o metropolis.o
 simulation.o: simulation.cpp
 	${CXX} ${CPPflags} -c $^ ${INCL} ${LIB}
 
-ising.o: classes/ising.cpp
+ising.o: Classes/ising.cpp
 	g++ ${CPPflags} -c $^ ${INCL} ${LIB}
 
-metropolis.o: classes/metropolis.cpp
+metropolis.o: Classes/metropolis.cpp
+	g++ ${CPPflags} -c $^ ${INCL} ${LIB}
+
+test.x: test.o ising.o metropolis.o
+	g++ ${CPPflags} -o $@ $^ ${INCL} ${LIB}
+	./test.x
+
+test.o: Classes/test.cpp
 	g++ ${CPPflags} -c $^ ${INCL} ${LIB}
 
 clean:

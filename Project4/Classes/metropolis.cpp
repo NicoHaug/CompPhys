@@ -7,7 +7,7 @@
 #include <map>
 #include <random>
 #include "ising.hpp"
-#include "metropolis.h"
+#include "metropolis.hpp"
 
 using namespace std;
 using namespace arma;
@@ -24,11 +24,10 @@ Metropolis::Metropolis(Ising spins)
 //================
 // DESTRUCTOR
 //================
-/*
-   Metropolis::~Metropolis(){
-        delete[] energyAndMag;
-   }
- */
+Metropolis::~Metropolis(){
+	delete[] energyAndMag;
+}
+
 
 //=====================
 // Public methods
