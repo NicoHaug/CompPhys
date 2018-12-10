@@ -6,7 +6,7 @@ UNAME := $(shell uname)
 
 ifeq ($(UNAME), Darwin)
 INCL := -I /usr/local/Cellar/armadillo/9.100.5/include
-LIB += -DARMA_DONT_USE_WRAPPER -framework Accelerate
+LIB := -DARMA_DONT_USE_WRAPPER -framework Accelerate
 endif
 
 ifeq ($(UNAME), Linux)
@@ -14,35 +14,20 @@ INCL :=
 LIB := -DARMA_DONT_USE_WRAPPER -lblas -llapack
 endif
 
-OBJS =
-TARGET1 = main.x
-
-TARGETS = $(TARGET1)
-
-all: $(TARGETS)
-
-main.x: main.o $(OBJS)
-	${CXX} ${CPPflags} -o $@ $^ ${INCL} ${LIB}
-
 main.o: main.cpp
-	${CXX} ${CPPflags} -c $^ ${INCL} ${LIB}
+	${CXX} ${CPPflags} -c $^
 
-test.x: test.o $(OBJS)
-		${CXX} ${CPPflags} -o $@ $^ ${INCL} ${LIB}
-		./test.x
-		rm -f test.o test.x
+main.x: main.o VMC.o
+	${CXX} ${CPPflags} -o $@ $^
+
+VMC.o: classes/VMC.cpp
+	${CXX} ${CPPflags} -c $^
+
+test.x: test.o
+	${CXX} ${CPPflags} -o $@ $^
 
 test.o: test.cpp
-	${CXX} ${CPPflags} -c $^ ${INCL} ${LIB}
-
-benchmark.x: benchmark.o $(OBJS)
-	${CXX} ${CPPflags} -o $@ $^ ${INCL} ${LIB}
-
-benchmark.o: benchmark.cpp
-	${CXX} ${CPPflags} -c $^ ${INCL} ${LIB}
+	${CXX} ${CPPflags} -c $^
 
 clean:
 	rm -f *.o *.txt *.x
-
-cleanResults:
-	rm -f ./Results/*.txt ./Results/*.png ./Results/*.pdf
