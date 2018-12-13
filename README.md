@@ -21,4 +21,4 @@ Repository for projects in FYS3150.
 
 ### Project 5
 
-[Project 5](https://github.com/nicolossus/FYS3150/tree/master/Project5):
+[Project 5](https://github.com/nicolossus/FYS3150/tree/master/Project5): In this project we use the variational Monte Carlo method to evaluate the ground state energy, the relative distance between two electrons and expectation value of the kinetic and potential energies of a quantum dot with N = 2 electrons in three dimensions. 
