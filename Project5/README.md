@@ -6,6 +6,10 @@ In this project we use the variational Monte Carlo method to evaluate the ground
 
 ### Contents
 
+- [main.cpp](https://github.com/nicolossus/FYS3150/blob/master/Project5/main.cpp): main program. Run all simulations in this project.
+
+- [plot.py](https://github.com/nicolossus/FYS3150/blob/master/Project5/benchmark.cpp): plotting procedures.
+
 The [classes](https://github.com/nicolossus/FYS3150/tree/master/Project5/classes) folder contains:
 
 - [VMC.hpp](https://github.com/nicolossus/FYS3150/blob/master/Project5/classes/VMC.hpp): class framework for the variational Monte Carlo method and the Metropolis algorithm.
@@ -21,10 +25,6 @@ The [classes](https://github.com/nicolossus/FYS3150/tree/master/Project5/classes
 The [results](https://github.com/nicolossus/FYS3150/tree/master/Project5/results) folder contains all the raw results produced in this project.
 
 The [plots](https://github.com/nicolossus/FYS3150/tree/master/Project5/plots) folder contains all the plots produced in this project.
-
-- [main.cpp](https://github.com/nicolossus/FYS3150/blob/master/Project5/main.cpp): main program. Run all simulations in this project.
-
-- [plot.py](https://github.com/nicolossus/FYS3150/blob/master/Project5/benchmark.cpp): plotting procedures.
 
 **Usage**
 
