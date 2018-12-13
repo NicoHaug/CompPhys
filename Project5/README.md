@@ -8,7 +8,7 @@ In this project we use the variational Monte Carlo method to evaluate the ground
 
 - [main.cpp](https://github.com/nicolossus/FYS3150/blob/master/Project5/main.cpp): main program. Run all simulations in this project.
 
-- [plot.py](https://github.com/nicolossus/FYS3150/blob/master/Project5/benchmark.cpp): plotting procedures.
+- [plot.py](https://github.com/nicolossus/FYS3150/blob/master/Project5/plot.cpp): plotting procedures.
 
 The [classes](https://github.com/nicolossus/FYS3150/tree/master/Project5/classes) folder contains:
 
