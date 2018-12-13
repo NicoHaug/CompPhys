@@ -6,11 +6,13 @@ This program contains plotting procedures for producing the results in
 this project
 """
 
-import numpy as np
-import matplotlib.pyplot as plt
-from scipy import stats
-import numpy.polynomial.polynomial as poly
 import sys
+
+import matplotlib.pyplot as plt
+import numpy as np
+import numpy.polynomial.polynomial as poly
+from mpl_toolkits.mplot3d import Axes3D
+from scipy import stats
 
 # Set fontsizes in figures
 params = {'legend.fontsize': 'x-large',
