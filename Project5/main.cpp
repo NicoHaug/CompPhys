@@ -1,4 +1,7 @@
+//=================================
+// Included dependencies
 #include "classes/VMC.hpp"
+#include "classes/wavefunctions.cpp"
 #include <armadillo>
 #include <chrono>
 #include <cmath>
@@ -11,68 +14,14 @@ using namespace std;
 using namespace chrono;
 using namespace arma;
 
-// Simple trial wave function and accompaying kinetic energy.
-// Potential energy is without coloumb term.
+//============================================================================
+//-------------------------------- MAIN --------------------------------------
+//============================================================================
+int main(int argc, char const *argv[])
 //----------------------------------------------------------------------------
-inline double acceptAmp1(double *params, double omega, mat &r, vec &delta,
-                         int num) {
-  double alpha = params[0];
-  double expo = dot(delta, delta + 2 * r.col(num));
-  return exp(-alpha * omega * expo);
-}
-
-inline double localKinetic1(double *params, double omega, mat &r) {
-  double R2 = accu(mat(r % r)); // r%r means elementwise multiplication
-  double alpha = params[0];
-  return -0.5 * omega * omega * R2 * alpha * alpha + 3 * alpha * omega;
-}
-
-inline double localPotential1(double *params, double omega, mat &r) {
-  double R2 = accu(mat(r % r)); // r%r means elementwise multiplication
-  return 0.5 * omega * omega * R2;
-}
+// Calculate variational Monte Carlo estimations with the Metropolis algorithm
 //----------------------------------------------------------------------------
-
-// Trial wave function with Jastrow factor and accompaying kinetic energy.
-// Potential energy is with coloumb term.
-//----------------------------------------------------------------------------
-inline double acceptAmp2(double *params, double omega, mat &r, vec &delta,
-                         int num) {
-  int other;
-  if (num == 0)
-    other = 1;
-  else
-    other = 0;
-
-  double alpha = params[0];
-  double beta = params[1];
-
-  double R1 = -alpha * omega * dot(delta, delta + 2 * r.col(num));
-  double R2 = norm(r.col(num) + delta - r.col(other));
-  double R3 = norm(r.col(num) - r.col(other));
-
-  return exp(R1 + R2 / (1 + beta * R2) - R3 / (1 + beta * R3));
-}
-
-inline double localKinetic2(double *params, double omega, mat &r) {
-  double alpha = params[0];
-  double beta = params[1];
-
-  double R12 = norm(r.col(0) - r.col(1));
-  double BR = 1 + beta * R12;
-  return localKinetic1(params, omega, r) +
-         1 / (2 * BR * BR) *
-             (alpha * omega * R12 - 1 / (2 * BR * BR) - 2 / R12 +
-              2 * beta / BR);
-}
-
-inline double localPotential2(double *params, double omega, mat &r) {
-  double R2 = accu(mat(r % r)); // r%r means elementwise multiplication
-  return 0.5 * omega * omega * R2 + 1 / norm(r.col(0) - r.col(1));
-}
-//----------------------------------------------------------------------------
-
-int main(int argc, char const *argv[]) {
+{
   double *params1 = new double[2];
   double *params2 = new double[2];
   vector<double> omega;
@@ -126,10 +75,9 @@ int main(int argc, char const *argv[]) {
   //---------------------------------------------------------------------------
 
   //---------------------------------------------------------------------------
-  cout << "Calculating mean seperation for different omega, no Jastrow" << endl;
+  cout << "Calculating mean seperation for different omega" << endl;
   Result myResult1, myResult2, myResult3;
   myfile.open("results/meanSeperation.txt");
-
   myResult1 = solver2.solve(1e6, 1e3, params1, 0.05, false);
   myResult2 = solver2.solve(1e6, 1e3, params1, 0.25, false);
   myResult3 = solver2.solve(1e6, 1e3, params1, 1, false);
@@ -153,11 +101,11 @@ int main(int argc, char const *argv[]) {
           "Jastrow"
        << endl;
   myfile.open("results/interactionJastrow.txt");
-  omega = {0.01, 0.05, 0.25, 0.5, 1};
+  omega = {0.05, 0.25, 1};
   for (int i = 0; i < omega.size(); i++) {
-    Result myResult1 = solver3.solve(1e6, 1e3, params1, omega[i], false);
-    myfile << omega[i] << " " << myResult1.E << " " << myResult1.Var << " "
-           << myResult1.R12 << "\n";
+    Result myResult = solver3.solve(1e7, 1e3, params2, omega[i], false);
+    myfile << omega[i] << " " << myResult.E << " " << myResult.Var << " "
+           << myResult.R12 << "\n";
   }
   myfile.close();
   //---------------------------------------------------------------------------
@@ -185,3 +133,4 @@ int main(int argc, char const *argv[]) {
 
   return 0;
 }
+//============================================================================

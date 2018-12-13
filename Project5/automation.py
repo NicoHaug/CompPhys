@@ -9,6 +9,7 @@ this project, reproducing all results
 import os
 
 # Compile programs and run tests
+os.system("make test.x")
 os.system("make main.x")
 os.system("./main.x")
 os.system("python3 plot.py")
