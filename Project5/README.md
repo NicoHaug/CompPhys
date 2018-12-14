@@ -4,7 +4,7 @@ This repository contains programs made for project 5 produced in a collaboration
 
 In this project we use the variational Monte Carlo method to evaluate the ground state energy, the relative distance between two electrons and expectation value of the kinetic and potential energies of a quantum dot with N = 2 electrons in three dimensions.
 
-### Contents
+### Contents :shipit:
 
 - [main.cpp](https://github.com/nicolossus/FYS3150/blob/master/Project5/main.cpp): main program. Run all simulations in this project.
 
